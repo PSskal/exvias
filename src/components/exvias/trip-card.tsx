@@ -1,17 +1,15 @@
 import Link from "next/link";
-import { ArrowRight, BusFront, Clock3, UsersRound } from "lucide-react";
+import Image from "next/image";
+import { Clock3, UserRound, UsersRound } from "lucide-react";
 import { TripStatus } from "@/lib/generated/prisma/client";
 import { formatTime } from "@/lib/exvias/constants";
 import { cn } from "@/lib/utils";
 
-const toneByStatus: Record<TripStatus, string> = {
-  QUEUED: "text-slate-500 bg-slate-100",
-  ACTIVE: "text-[#10A957] bg-[#2ECC71]/15",
-  BOARDING: "text-[#1E5BFF] bg-[#1E5BFF]/10",
-  DEPARTED: "text-slate-500 bg-slate-100",
-  COMPLETED: "text-[#10A957] bg-[#2ECC71]/15",
-  CANCELLED: "text-[#E53935] bg-[#E53935]/10",
-};
+const carImages = [
+  "/cars/transparent/avanzanegro-transparent.png",
+  "/cars/transparent/avanzarojo-transparent.png",
+  "/cars/transparent/avanzaverde-transparent.png",
+] as const;
 
 export function PassengerTripCard({
   id,
@@ -22,6 +20,8 @@ export function PassengerTripCard({
   capacity,
   minimumToStart,
   plate,
+  driverName,
+  driverImage,
   index,
 }: {
   id: string;
@@ -32,6 +32,8 @@ export function PassengerTripCard({
   capacity: number;
   minimumToStart: number;
   plate?: string | null;
+  driverName?: string | null;
+  driverImage?: string | null;
   index: number;
 }) {
   const isFull = bookedSeats >= capacity;
@@ -43,59 +45,102 @@ export function PassengerTripCard({
       : index === 1
         ? "SIGUIENTE TURNO"
         : `TURNO ${index + 1}`;
+  const carImage = carImages[index % carImages.length];
+  const seatProgress = Math.min(100, (bookedSeats / capacity) * 100);
 
   return (
-    <div className="rounded-[16px] bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,0.10)] ring-1 ring-slate-200/70">
-      <div className="flex gap-3">
-        <div className="min-w-0 flex-1">
-          <span className={cn("rounded-md px-2 py-1 text-[11px] font-black", toneByStatus[status])}>
+    <div className="overflow-hidden rounded-[28px] bg-[#E8EDF0] p-3 shadow-[0_18px_44px_rgba(15,23,42,0.10)] ring-1 ring-white/70">
+      <div className="relative min-h-52 rounded-[24px] bg-[linear-gradient(180deg,#F7FAFB,#E3E9EC)] p-4">
+        <div className="flex items-center justify-between gap-3">
+          <span className="inline-flex h-9 items-center rounded-full bg-white px-3 text-xs font-black text-slate-950 shadow-sm">
             {badge}
           </span>
-          <p className="mt-4 text-lg font-black">
-            {status === "ACTIVE" || index === 0
-              ? "Sale en breve"
-              : departure
-                ? `Sale ${formatTime(departure)}`
-                : label}
-          </p>
-          <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-            <UsersRound className="size-4 text-slate-400" />
-            {bookedSeats} / {capacity} pasajeros
-          </p>
-          <div className="mt-4 inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">
-            <Clock3 className="size-3" />
-            {plate ?? "EXV-02"}
-          </div>
+          <span
+            className={cn(
+              "inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-black shadow-sm",
+              bookedSeats >= minimumToStart
+                ? "bg-[#2ECC71] text-white"
+                : "bg-[#F4B400] text-slate-950",
+            )}
+          >
+            <UsersRound className="size-4" />
+            {bookedSeats}/{capacity}
+          </span>
         </div>
-        <div className="flex w-28 flex-col items-end justify-between">
-          <div className="mt-5 grid size-16 place-items-center rounded-2xl bg-slate-100 text-slate-500">
-            <BusFront className="size-10" />
+
+        <div className="relative mx-auto mt-1 h-36 w-full">
+          <Image
+            src={carImage}
+            alt="Vehículo disponible"
+            fill
+            sizes="(max-width: 480px) 100vw, 420px"
+            className="scale-110 object-contain drop-shadow-[0_18px_20px_rgba(15,23,42,0.20)]"
+          />
+        </div>
+
+        <div className="mt-3 grid grid-cols-[1fr_auto] items-end gap-3 rounded-[18px] bg-white/80 p-3 shadow-sm ring-1 ring-white/70">
+          <div className="min-w-0">
+            <p className="text-base font-black text-slate-950">
+              {status === "ACTIVE" || index === 0 ? "Salida próxima" : "Turno disponible"}
+            </p>
+            <p className="mt-0.5 text-xs font-bold text-slate-500">
+              {status === "ACTIVE" || index === 0
+                ? "Sale en breve"
+                : departure
+                  ? `Sale ${formatTime(departure)}`
+                  : label}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">
+                <Clock3 className="size-3" />
+                {plate ?? "EXV-02"}
+              </span>
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              {driverImage ? (
+                <Image
+                  src={driverImage}
+                  alt={driverName ?? "Conductor"}
+                  width={24}
+                  height={24}
+                  className="size-6 rounded-full object-cover"
+                />
+              ) : (
+                <span className="grid size-6 place-items-center rounded-full bg-[#1E5BFF]/10 text-[#1E5BFF]">
+                  <UserRound className="size-3.5" />
+                </span>
+              )}
+              <span className="truncate text-xs font-black text-slate-700">
+                {driverName ?? "Conductor asignado"}
+              </span>
+            </div>
           </div>
+
           {canReserve ? (
             <Link
               href={`/trip/${id}`}
               className={cn(
-                "inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-black text-white",
-                index === 0 ? "bg-[#12B85F]" : "bg-[#F4B400] text-slate-950",
+                "inline-flex h-11 items-center rounded-full px-4 text-xs font-black text-white",
+                index === 0 ? "bg-slate-950" : "bg-[#1E5BFF]",
               )}
             >
               {cta}
-              <ArrowRight className="size-3.5" />
             </Link>
           ) : (
-            <span className="rounded-lg bg-slate-200 px-4 py-2 text-xs font-bold text-slate-500">
+            <span className="rounded-full bg-slate-200 px-4 py-2 text-xs font-bold text-slate-500">
               Próximamente
             </span>
           )}
         </div>
       </div>
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-white">
         <div
           className={cn(
             "h-full rounded-full",
             bookedSeats >= minimumToStart ? "bg-[#12B85F]" : "bg-[#F4B400]",
           )}
-          style={{ width: `${Math.min(100, (bookedSeats / capacity) * 100)}%` }}
+          style={{ width: `${seatProgress}%` }}
         />
       </div>
       <p className="mt-2 text-xs text-slate-500">

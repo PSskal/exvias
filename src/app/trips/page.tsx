@@ -1,10 +1,7 @@
-import Link from "next/link";
-import { Info, Route as RouteIcon } from "lucide-react";
+import Image from "next/image";
+import { Route as RouteIcon } from "lucide-react";
 import { listAvailableTrips } from "@/lib/exvias/trips";
-import {
-  routeDirectionLabels,
-  routeDirectionShortLabels,
-} from "@/lib/exvias/constants";
+import { routeDirectionLabels } from "@/lib/exvias/constants";
 import { RouteDirection } from "@/lib/generated/prisma/client";
 import {
   BlueHeader,
@@ -15,7 +12,6 @@ import {
   AppCard,
 } from "@/components/exvias/mobile-shell";
 import { PassengerTripCard } from "@/components/exvias/trip-card";
-import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -37,41 +33,38 @@ export default async function TripsPage({
   return (
     <PhoneShell>
       <StatusBar />
-      <BlueHeader title={routeDirectionLabels[direction]} subtitle="Elige tu turno de salida" />
+      <BlueHeader
+        title={routeDirectionLabels[direction]}
+        subtitle="Elige tu turno de salida"
+      />
       <ContentArea withBottomNav className="space-y-4">
-        <AppCard className="space-y-3">
-          <div className="flex items-center gap-2">
-            <div className="grid size-9 place-items-center rounded-xl bg-[#1E5BFF]/10 text-[#073FEA]">
+        <AppCard className="relative min-h-36 overflow-hidden bg-[linear-gradient(135deg,#FFFFFF,#EAF1FF)]">
+          <div className="absolute -right-10 -top-10 size-32 rounded-full bg-[#1E5BFF]/12 blur-2xl" />
+          <div className="relative z-10 max-w-[58%]">
+            <div className="grid size-9 place-items-center rounded-xl bg-[#1E5BFF]/10 text-[#1E5BFF]">
               <RouteIcon className="size-5" />
             </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500">Ruta seleccionada</p>
-              <p className="font-black text-slate-950">{routeDirectionLabels[direction]}</p>
-            </div>
+            <p className="mt-4 text-xs font-bold text-slate-500">
+              Ruta seleccionada
+            </p>
+            <p className="mt-1 text-xl font-black leading-tight text-slate-950">
+              {routeDirectionLabels[direction]}
+            </p>
+            <p className="mt-2 text-xs font-semibold text-slate-600">
+              Elige el carro y turno que más te convenga.
+            </p>
+          </div>
+          <div className="absolute bottom-2 right-0 h-28 w-48">
+            <Image
+              src="/cars/transparent/avanzanegro-transparent.png"
+              alt="Carro EXVIASS"
+              fill
+              priority
+              sizes="192px"
+              className="object-contain object-right drop-shadow-[0_18px_18px_rgba(0,0,0,0.30)]"
+            />
           </div>
         </AppCard>
-
-        <div className="flex items-start gap-2 rounded-[12px] bg-white/80 p-3 text-sm text-slate-600 shadow-sm ring-1 ring-slate-200/70">
-          <Info className="mt-0.5 size-4 shrink-0 text-slate-400" />
-          <p>Elige el turno en el que deseas viajar. El viaje sale con mínimo 4 pasajeros.</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          {Object.values(RouteDirection).map((item) => (
-            <Link
-              key={item}
-              href={`/trips?direction=${item}`}
-              className={cn(
-                "rounded-[10px] border bg-white px-3 py-2 text-center text-sm font-black",
-                item === direction
-                  ? "border-[#073FEA] text-[#073FEA] shadow-sm"
-                  : "border-transparent text-slate-500",
-              )}
-            >
-              Desde {routeDirectionShortLabels[item]}
-            </Link>
-          ))}
-        </div>
 
         <section className="space-y-3">
           <div className="flex items-end justify-between">
@@ -79,7 +72,9 @@ export default async function TripsPage({
               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                 Turnos disponibles
               </p>
-              <h2 className="text-lg font-black">Selecciona tu salida</h2>
+              <h2 className="text-lg font-black text-slate-950">
+                Selecciona tu salida
+              </h2>
             </div>
             <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-600 shadow-sm">
               {trips.length} turnos
@@ -97,12 +92,16 @@ export default async function TripsPage({
                 capacity={trip.route.capacity}
                 minimumToStart={trip.route.minimumToStart}
                 plate={trip.driver?.licensePlate}
+                driverName={trip.driver?.user.name}
+                driverImage={trip.driver?.user.image}
                 index={index}
               />
             ))
           ) : (
-            <div className="rounded-[10px] bg-white p-6 text-center shadow-sm">
-              <p className="text-lg font-black">No hay turnos activos</p>
+            <div className="rounded-[18px] bg-white p-6 text-center shadow-sm">
+              <p className="text-lg font-black text-slate-950">
+                No hay turnos activos
+              </p>
               <p className="mt-2 text-sm text-slate-500">
                 Crea un turno desde admin o ejecuta el seed de prueba.
               </p>

@@ -1,11 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Bell,
   CalendarDays,
   ChevronLeft,
   Home,
-  MapPinned,
+  Menu,
   UserRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,10 +20,11 @@ export function PhoneShell({
     <main className="min-h-screen bg-[#F5F7FA] px-0 py-0 text-slate-950 sm:grid sm:place-items-start sm:bg-[#E9EEF6] sm:px-6 sm:py-8 lg:py-10">
       <div
         className={cn(
-          "relative mx-auto min-h-screen w-full bg-[#F5F7FA] sm:max-w-[460px] sm:overflow-hidden sm:rounded-[18px] sm:shadow-[0_24px_80px_rgba(15,23,42,0.14)] sm:ring-1 sm:ring-black/10",
+          "relative mx-auto min-h-screen w-full overflow-hidden bg-[#F5F7FA] sm:max-w-[460px] sm:rounded-[18px] sm:shadow-[0_24px_80px_rgba(15,23,42,0.14)] sm:ring-1 sm:ring-black/10",
           className,
         )}
       >
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(circle_at_50%_0%,rgba(30,91,255,0.14),transparent_62%)]" />
         {children}
       </div>
     </main>
@@ -37,7 +37,7 @@ export function StatusBar() {
 
 export function BrandMark() {
   return (
-    <div className="relative h-14 w-40 overflow-hidden">
+    <div className="relative h-14 w-40 overflow-hidden rounded-xl bg-white px-2 shadow-sm">
       <Image
         src="/brand/exviass-logo.png"
         alt="EXVIASS S.A."
@@ -52,12 +52,23 @@ export function BrandMark() {
 
 export function HomeTopBar() {
   return (
-    <div className="flex items-center justify-between px-5 pt-5">
+    <div className="relative z-10 flex items-center justify-between px-5 pt-5">
+      <Link
+        href="/trips"
+        className="grid size-11 place-items-center rounded-full bg-white text-slate-700 shadow-sm ring-1 ring-slate-200/70"
+        aria-label="Menu"
+      >
+        <Menu className="size-5" />
+      </Link>
       <BrandMark />
-      <button className="relative grid size-10 place-items-center rounded-full bg-white text-[#0B2E86] shadow-sm">
-        <Bell className="size-5" />
-        <span className="absolute right-2 top-2 size-2 rounded-full bg-[#E53935]" />
-      </button>
+      <Link
+        href="/account"
+        className="relative grid size-11 place-items-center rounded-full bg-white text-[#0B2E86] shadow-sm ring-1 ring-slate-200/70"
+        aria-label="Mi cuenta"
+      >
+        <UserRound className="size-5" />
+        <span className="absolute right-1 top-1 size-3 rounded-full border-2 border-white bg-[#2ECC71]" />
+      </Link>
     </div>
   );
 }
@@ -74,14 +85,14 @@ export function BlueHeader({
   subtitle?: string;
 }) {
   return (
-    <div className="bg-[#073FEA] text-white">
-      <div className="flex min-h-14 items-center justify-between px-4 py-2">
-        <Link href={href} className="grid size-9 place-items-center rounded-full hover:bg-white/10">
+    <div className="relative z-10 bg-[#F5F7FA]/92 text-slate-950 backdrop-blur">
+      <div className="flex min-h-16 items-center justify-between px-5 py-3">
+        <Link href={href} className="grid size-10 place-items-center rounded-full bg-white text-slate-700 shadow-sm ring-1 ring-slate-200/70">
           <ChevronLeft className="size-5" />
         </Link>
         <div className="min-w-0 text-center">
-          <h1 className="truncate text-sm font-bold">{title}</h1>
-          {subtitle ? <p className="mt-0.5 text-[11px] font-semibold text-white/75">{subtitle}</p> : null}
+          <h1 className="truncate text-sm font-black">{title}</h1>
+          {subtitle ? <p className="mt-0.5 text-[11px] font-semibold text-slate-500">{subtitle}</p> : null}
         </div>
         <div className="grid size-9 place-items-center">{action}</div>
       </div>
@@ -92,14 +103,13 @@ export function BlueHeader({
 export function BottomNav({ active }: { active: "home" | "trips" | "my" | "account" }) {
   const items = [
     { id: "home", label: "Inicio", href: "/", icon: Home },
-    { id: "trips", label: "Turnos", href: "/trips", icon: MapPinned },
     { id: "my", label: "Mis viajes", href: "/my-trips", icon: CalendarDays },
     { id: "account", label: "Mi cuenta", href: "/account", icon: UserRound },
   ] as const;
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full border-t border-slate-200 bg-white/95 px-3 pb-3 pt-2 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur sm:absolute sm:max-w-[460px] sm:rounded-b-[18px]">
-      <div className="grid grid-cols-4">
+    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full px-5 pb-4 sm:absolute sm:max-w-[460px]">
+      <div className="grid grid-cols-3 gap-1 rounded-full border border-white/80 bg-white/92 p-1.5 shadow-[0_18px_44px_rgba(30,91,255,0.16)] ring-1 ring-slate-200/70 backdrop-blur">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = item.id === active;
@@ -109,12 +119,14 @@ export function BottomNav({ active }: { active: "home" | "trips" | "my" | "accou
               key={item.id}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-semibold",
-                isActive ? "text-[#1E5BFF]" : "text-slate-400",
+                "flex h-12 items-center justify-center gap-2 rounded-full px-2 text-[11px] font-black transition",
+                isActive
+                  ? "bg-[#1E5BFF] text-white shadow-[0_10px_24px_rgba(30,91,255,0.24)]"
+                  : "text-slate-400 hover:bg-[#1E5BFF]/8 hover:text-[#1E5BFF]",
               )}
             >
-              <Icon className="size-5" />
-              {item.label}
+              <Icon className={cn("size-5", isActive && "stroke-[2.5]")} />
+              <span className="truncate">{item.label}</span>
             </Link>
           );
         })}
@@ -133,7 +145,7 @@ export function ContentArea({
   className?: string;
 }) {
   return (
-    <div className={cn("px-5 pt-5", withBottomNav ? "pb-28" : "pb-8", className)}>
+    <div className={cn("relative z-10 px-5 pt-5", withBottomNav ? "pb-28" : "pb-8", className)}>
       {children}
     </div>
   );
@@ -149,7 +161,7 @@ export function AppCard({
   return (
     <section
       className={cn(
-        "rounded-[14px] border border-white/80 bg-white p-4 shadow-[0_12px_34px_rgba(15,23,42,0.08)]",
+        "rounded-[18px] border border-white/80 bg-white p-4 text-slate-950 shadow-[0_14px_36px_rgba(15,23,42,0.08)]",
         className,
       )}
     >
