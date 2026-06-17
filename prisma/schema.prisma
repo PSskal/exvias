@@ -1,0 +1,268 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          UserRole  @default(PASSENGER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  passengerProfile PassengerProfile?
+  driverProfile    DriverProfile?
+  bookings         Booking[]
+  approvedPayments Payment[] @relation("PaymentApprovedBy")
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+enum UserRole {
+  PASSENGER
+  DRIVER
+  ADMIN
+}
+
+enum RouteDirection {
+  CUSCO_TO_COLQUEPATA
+  COLQUEPATA_TO_CUSCO
+}
+
+enum TripStatus {
+  QUEUED
+  ACTIVE
+  BOARDING
+  DEPARTED
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  RESERVED
+  CONFIRMED
+  PAID_PARTIAL
+  BOARDED
+  NO_SHOW
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum PaymentMethod {
+  YAPE
+  CASH
+  MANUAL
+}
+
+enum QueueStatus {
+  WAITING
+  ASSIGNED
+  SKIPPED
+  OFFLINE
+}
+
+model PassengerProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  phone     String?
+  document  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DriverProfile {
+  id           String        @id @default(cuid())
+  userId       String        @unique
+  phone        String?
+  licensePlate String?
+  vehicleName  String?
+  capacity     Int           @default(7)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  queueEntries DriverQueue[]
+  trips        Trip[]
+}
+
+model Route {
+  id             String        @id @default(cuid())
+  name           String
+  origin         String
+  destination    String
+  farePen        Decimal       @default(15.00) @db.Decimal(10, 2)
+  depositPen     Decimal       @default(7.50) @db.Decimal(10, 2)
+  capacity       Int           @default(7)
+  minimumToStart Int           @default(4)
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  points         RoutePoint[]
+  trips          Trip[]
+  queueEntries   DriverQueue[]
+
+  @@unique([origin, destination])
+}
+
+model RoutePoint {
+  id           String         @id @default(cuid())
+  routeId      String
+  direction    RouteDirection
+  name         String
+  sequence     Int
+  minuteOffset Int
+  isTerminal   Boolean        @default(false)
+  route        Route          @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  bookings     Booking[]
+
+  @@unique([routeId, direction, sequence])
+  @@index([routeId, direction])
+}
+
+model Trip {
+  id                 String         @id @default(cuid())
+  routeId            String
+  direction          RouteDirection
+  status             TripStatus     @default(QUEUED)
+  turnLabel          String
+  plannedDepartureAt DateTime?
+  activatedAt        DateTime?
+  departedAt         DateTime?
+  completedAt        DateTime?
+  driverId           String?
+  bookedSeats        Int            @default(0)
+  adminOverride      Boolean        @default(false)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  route              Route          @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  driver             DriverProfile? @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  bookings           Booking[]
+
+  @@index([routeId, direction, status])
+  @@index([plannedDepartureAt])
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  tripId          String
+  userId          String?
+  passengerName   String
+  passengerPhone  String
+  seatNumber      Int
+  boardingPointId String
+  status          BookingStatus @default(RESERVED)
+  amountDuePen    Decimal       @default(7.50) @db.Decimal(10, 2)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  trip            Trip          @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  boardingPoint   RoutePoint    @relation(fields: [boardingPointId], references: [id])
+  payment         Payment?
+
+  @@unique([tripId, seatNumber])
+  @@index([tripId, status])
+  @@index([userId])
+}
+
+model Payment {
+  id           String        @id @default(cuid())
+  bookingId    String        @unique
+  method       PaymentMethod @default(YAPE)
+  status       PaymentStatus @default(PENDING)
+  amountPen    Decimal       @default(7.50) @db.Decimal(10, 2)
+  proofUrl     String?
+  approvedAt   DateTime?
+  approvedById String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  booking      Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  approvedBy   User?         @relation("PaymentApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+}
+
+model DriverQueue {
+  id         String         @id @default(cuid())
+  routeId    String
+  direction  RouteDirection
+  driverId   String
+  position   Int
+  status     QueueStatus    @default(WAITING)
+  joinedAt   DateTime       @default(now())
+  assignedAt DateTime?
+  route      Route          @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  driver     DriverProfile  @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@unique([routeId, direction, position, status])
+  @@index([routeId, direction, status, position])
+  @@index([driverId, status])
+}
