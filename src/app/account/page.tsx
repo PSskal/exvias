@@ -3,6 +3,7 @@ import {
   CalendarDays,
   ChevronRight,
   CircleUserRound,
+  CarFront,
   LogIn,
   Mail,
   ShieldCheck,
@@ -93,6 +94,14 @@ function SignedInAccount({
           title="Mis viajes"
           description="Revisa tus reservas y estados de pago"
         />
+        {(user.role === "DRIVER" || user.role === "ADMIN") && (
+          <AccountLink
+            href="/driver"
+            icon={<CarFront className="size-5" />}
+            title="Panel conductor"
+            description="Confirma pagos y revisa pasajeros"
+          />
+        )}
       </section>
 
       <SignOutButton />

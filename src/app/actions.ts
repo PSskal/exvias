@@ -3,26 +3,64 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
+  assignDriverToTrip,
   approvePayment,
   createTripTurn,
   joinDriverQueue,
-  reserveSeat,
+  publishNextRampTurn,
+  rejectPayment,
+  reserveSeatWithPaymentProof,
+  saveRampQueues,
+  saveScheduleBoard,
   submitPaymentProof,
+  updateDriverBookingStatus,
+  updateDriverTripStatus,
+  updateDriverVehicle,
+  updateManualSeats,
   updateTripStatus,
+  upsertDriverProfile,
 } from "@/lib/exvias/trips";
 import {
+  assignDriverToTripSchema,
   approvePaymentSchema,
   bookingSchema,
   createTurnSchema,
+  driverBookingStatusSchema,
+  driverTripStatusSchema,
   joinDriverQueueSchema,
   paymentProofSchema,
+  publishNextRampTurnSchema,
+  rejectPaymentSchema,
+  saveRampQueuesSchema,
+  saveScheduleBoardSchema,
+  upsertDriverProfileSchema,
+  updateDriverVehicleSchema,
+  updateManualSeatsSchema,
   updateTripStatusSchema,
 } from "@/lib/exvias/validation";
+import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
 function value(formData: FormData, key: string) {
   const entry = formData.get(key);
   return typeof entry === "string" ? entry : "";
+}
+
+async function requireAdmin() {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/admin");
+  }
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { id: true, role: true },
+  });
+
+  if (dbUser?.role !== "ADMIN") {
+    throw new Error("Solo un administrador puede realizar esta acción");
+  }
+
+  return dbUser;
 }
 
 export async function reserveSeatAction(formData: FormData) {
@@ -38,45 +76,103 @@ export async function reserveSeatAction(formData: FormData) {
     redirect(`/login?callbackURL=/trip/${input.tripId}`);
   }
 
-  const booking = await reserveSeat({
-    ...input,
-    userId: user.id,
+  const params = new URLSearchParams({
+    tripId: input.tripId,
+    boardingPointId: input.boardingPointId,
+    passengerName: input.passengerName,
+    passengerPhone: input.passengerPhone,
   });
 
-  revalidatePath("/trips");
-  revalidatePath(`/trip/${input.tripId}`);
-  redirect(`/payment?bookingId=${booking.id}`);
+  redirect(`/payment?${params.toString()}`);
 }
 
 export async function submitPaymentProofAction(formData: FormData) {
-  const uploadedFile = formData.get("proofFile");
-  const fileName =
-    uploadedFile instanceof File && uploadedFile.size > 0
-      ? uploadedFile.name
-      : value(formData, "proofUrl");
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/trips");
+  }
 
   const input = paymentProofSchema.parse({
-    bookingId: value(formData, "bookingId"),
-    proofUrl: fileName,
+    bookingId: value(formData, "bookingId") || undefined,
+    tripId: value(formData, "tripId") || undefined,
+    boardingPointId: value(formData, "boardingPointId") || undefined,
+    passengerName: value(formData, "passengerName") || undefined,
+    passengerPhone: value(formData, "passengerPhone") || undefined,
+    proofUrl: value(formData, "proofUrl"),
   });
 
-  await submitPaymentProof(input);
+  const booking = input.bookingId
+    ? { id: input.bookingId }
+    : await reserveSeatWithPaymentProof({
+        tripId: input.tripId!,
+        boardingPointId: input.boardingPointId!,
+        passengerName: input.passengerName!,
+        passengerPhone: input.passengerPhone!,
+        proofUrl: input.proofUrl,
+        userId: user.id,
+      });
+
+  if (input.bookingId) {
+    await submitPaymentProof({
+      bookingId: input.bookingId,
+      proofUrl: input.proofUrl,
+    });
+  }
 
   revalidatePath("/payment");
   revalidatePath("/admin");
-  redirect(`/tracking/${input.bookingId}`);
+  revalidatePath("/admin/schedule");
+  revalidatePath("/driver");
+  revalidatePath("/trips");
+  revalidatePath("/my-trips");
+  redirect(`/tracking/${booking.id}`);
 }
 
 export async function approvePaymentAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/admin");
+  }
+
   const input = approvePaymentSchema.parse({
     paymentId: value(formData, "paymentId"),
   });
 
-  await approvePayment(input.paymentId);
+  await approvePayment(input.paymentId, user?.id);
   revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/driver");
+  revalidatePath("/my-trips");
+}
+
+export async function rejectPaymentAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = rejectPaymentSchema.parse({
+    paymentId: value(formData, "paymentId"),
+    reason: value(formData, "reason") || undefined,
+  });
+
+  const payment = await rejectPayment({
+    paymentId: input.paymentId,
+    rejectedById: user.id,
+    reason: input.reason,
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/driver");
+  revalidatePath("/trips");
+  revalidatePath("/my-trips");
+  revalidatePath(`/tracking/${payment.bookingId}`);
 }
 
 export async function updateTripStatusAction(formData: FormData) {
+  await requireAdmin();
+
   const input = updateTripStatusSchema.parse({
     tripId: value(formData, "tripId"),
     status: value(formData, "status"),
@@ -89,7 +185,97 @@ export async function updateTripStatusAction(formData: FormData) {
   revalidatePath(`/trip/${input.tripId}`);
 }
 
+export async function updateDriverTripStatusAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = driverTripStatusSchema.parse({
+    tripId: value(formData, "tripId"),
+    status: value(formData, "status"),
+  });
+
+  await updateDriverTripStatus({
+    ...input,
+    userId: user.id,
+  });
+
+  revalidatePath("/driver");
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/trips");
+  revalidatePath(`/trip/${input.tripId}`);
+}
+
+export async function updateDriverBookingStatusAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = driverBookingStatusSchema.parse({
+    bookingId: value(formData, "bookingId"),
+    status: value(formData, "status"),
+  });
+
+  await updateDriverBookingStatus({
+    ...input,
+    userId: user.id,
+  });
+
+  revalidatePath("/driver");
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/my-trips");
+}
+
+export async function updateDriverVehicleAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = updateDriverVehicleSchema.parse({
+    vehicleName: value(formData, "vehicleName"),
+  });
+
+  await updateDriverVehicle({
+    userId: user.id,
+    vehicleName: input.vehicleName,
+  });
+
+  revalidatePath("/driver");
+  revalidatePath("/admin");
+  revalidatePath("/trips");
+}
+
+export async function updateManualSeatsAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = updateManualSeatsSchema.parse({
+    tripId: value(formData, "tripId"),
+    delta: value(formData, "delta"),
+  });
+
+  await updateManualSeats({
+    ...input,
+    userId: user.id,
+  });
+
+  revalidatePath("/driver");
+  revalidatePath("/trips");
+  revalidatePath(`/trip/${input.tripId}`);
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+}
+
 export async function createTripTurnAction(formData: FormData) {
+  await requireAdmin();
+
   const input = createTurnSchema.parse({
     routeId: value(formData, "routeId"),
     direction: value(formData, "direction"),
@@ -109,6 +295,8 @@ export async function createTripTurnAction(formData: FormData) {
 }
 
 export async function joinDriverQueueAction(formData: FormData) {
+  await requireAdmin();
+
   const input = joinDriverQueueSchema.parse({
     routeId: value(formData, "routeId"),
     direction: value(formData, "direction"),
@@ -117,4 +305,94 @@ export async function joinDriverQueueAction(formData: FormData) {
 
   await joinDriverQueue(input);
   revalidatePath("/admin");
+}
+
+export async function assignDriverToTripAction(formData: FormData) {
+  await requireAdmin();
+
+  const input = assignDriverToTripSchema.parse({
+    tripId: value(formData, "tripId"),
+    driverId: value(formData, "driverId"),
+  });
+
+  await assignDriverToTrip(input);
+  revalidatePath("/admin");
+  revalidatePath("/trips");
+  revalidatePath(`/trip/${input.tripId}`);
+}
+
+export async function assignDriverToTripBoardAction(input: {
+  tripId: string;
+  driverId: string;
+}) {
+  await requireAdmin();
+
+  const parsed = assignDriverToTripSchema.parse(input);
+
+  await assignDriverToTrip(parsed);
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/trips");
+  revalidatePath(`/trip/${parsed.tripId}`);
+}
+
+export async function saveScheduleBoardAction(input: {
+  assignments: Array<{ tripId: string; driverId: string }>;
+  orders: Array<{ direction: string; tripIds: string[] }>;
+}) {
+  await requireAdmin();
+
+  const parsed = saveScheduleBoardSchema.parse(input);
+
+  await saveScheduleBoard(parsed);
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/trips");
+}
+
+export async function saveRampQueuesAction(input: {
+  routeId: string;
+  queues: Array<{ direction: string; driverIds: string[] }>;
+}) {
+  await requireAdmin();
+
+  const parsed = saveRampQueuesSchema.parse(input);
+
+  await saveRampQueues(parsed);
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/trips");
+}
+
+export async function publishNextRampTurnAction(input: {
+  routeId: string;
+  direction: string;
+}) {
+  await requireAdmin();
+
+  const parsed = publishNextRampTurnSchema.parse(input);
+  const trip = await publishNextRampTurn(parsed);
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/trips");
+  revalidatePath(`/trip/${trip.id}`);
+}
+
+export async function upsertDriverProfileAction(formData: FormData) {
+  await requireAdmin();
+
+  const input = upsertDriverProfileSchema.parse({
+    userId: value(formData, "userId"),
+    phone: value(formData, "phone") || undefined,
+    yapePhone: value(formData, "yapePhone"),
+    yapeName: value(formData, "yapeName"),
+    licensePlate: value(formData, "licensePlate"),
+    vehicleName: value(formData, "vehicleName"),
+  });
+
+  await upsertDriverProfile(input);
+  revalidatePath("/admin");
+  revalidatePath("/driver");
+  revalidatePath("/account");
 }

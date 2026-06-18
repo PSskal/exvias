@@ -2,7 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { LogIn, MapPin, Route, UserRound } from "lucide-react";
 import { reserveSeatAction } from "@/app/actions";
-import { getTripBookingOptions } from "@/lib/exvias/trips";
+import {
+  getPassengerProfile,
+  getTripBookingOptions,
+} from "@/lib/exvias/trips";
 import {
   formatPen,
   formatTime,
@@ -19,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { RoutePointMapPicker } from "@/components/exvias/route-point-map-picker";
 
 export const dynamic = "force-dynamic";
 
@@ -33,11 +36,13 @@ export default async function TripPage({
     getTripBookingOptions(id).catch(() => null),
     getCurrentUser(),
   ]);
+  const passengerProfile = await getPassengerProfile(user?.id);
 
   if (!details) notFound();
 
   const { trip, points } = details;
-  const remainingSeats = trip.route.capacity - trip.bookedSeats;
+  const occupiedSeats = trip.bookedSeats + trip.manualSeats;
+  const remainingSeats = trip.route.capacity - occupiedSeats;
   const farePen = Number(trip.route.farePen);
   const depositPen = Number(trip.route.depositPen);
 
@@ -98,56 +103,10 @@ export default async function TripPage({
         <form action={reserveSeatAction} className="space-y-5">
           <input type="hidden" name="tripId" value={trip.id} />
 
-          <section className="relative rounded-[16px] bg-[linear-gradient(180deg,#f8fafc,#eef4f6)] p-4 shadow-inner ring-1 ring-slate-200/70">
-            <div className="mb-4">
-              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                Paso 1
-              </p>
-              <h2 className="font-black">Selecciona dónde subirás</h2>
-            </div>
-            <div className="absolute bottom-9 left-[33px] top-24 w-1 rounded-full bg-[#1E5BFF]" />
-            <div className="space-y-3">
-              {points.map((point, index) => (
-                <label key={point.id} className="relative flex gap-4">
-                  <input
-                    className="peer sr-only"
-                    type="radio"
-                    name="boardingPointId"
-                    value={point.id}
-                    defaultChecked={index === 1 || index === 0}
-                    required
-                  />
-                  <span
-                    className={cn(
-                      "relative z-10 mt-5 grid size-5 shrink-0 place-items-center rounded-full border-4 border-white bg-[#1E5BFF] shadow",
-                      point.isTerminal && "bg-[#E53935]",
-                    )}
-                  >
-                    <span className="size-2 rounded-full bg-white" />
-                  </span>
-                  <span className="block flex-1 rounded-[10px] bg-white p-3 shadow-[0_8px_20px_rgba(15,23,42,0.10)] ring-1 ring-transparent peer-checked:ring-2 peer-checked:ring-[#1E5BFF]">
-                    <span className="block text-sm font-black">{point.name}</span>
-                    <span className="mt-1 block text-xs text-slate-500">
-                      Paso aprox:{" "}
-                      {trip.plannedDepartureAt
-                        ? formatTime(
-                            new Date(
-                              trip.plannedDepartureAt.getTime() +
-                                point.minuteOffset * 60_000,
-                            ),
-                          )
-                        : `+${point.minuteOffset} min`}
-                    </span>
-                    {!point.isTerminal && (
-                      <span className="mt-3 hidden rounded-lg bg-[#073FEA] py-2 text-center text-xs font-black text-white peer-checked:block">
-                        Subir aquí
-                      </span>
-                    )}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </section>
+          <RoutePointMapPicker
+            points={points}
+            plannedDepartureAtIso={trip.plannedDepartureAt?.toISOString()}
+          />
 
           <AppCard>
             <div className="mb-4 flex items-center gap-2">
@@ -175,6 +134,7 @@ export default async function TripPage({
                 <Input
                   id="passengerPhone"
                   name="passengerPhone"
+                  defaultValue={passengerProfile?.phone ?? ""}
                   required
                   inputMode="tel"
                   className="h-11 rounded-[10px] bg-slate-50"

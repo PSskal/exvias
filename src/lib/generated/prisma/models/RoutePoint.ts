@@ -29,11 +29,15 @@ export type AggregateRoutePoint = {
 export type RoutePointAvgAggregateOutputType = {
   sequence: number | null
   minuteOffset: number | null
+  latitude: number | null
+  longitude: number | null
 }
 
 export type RoutePointSumAggregateOutputType = {
   sequence: number | null
   minuteOffset: number | null
+  latitude: number | null
+  longitude: number | null
 }
 
 export type RoutePointMinAggregateOutputType = {
@@ -43,6 +47,8 @@ export type RoutePointMinAggregateOutputType = {
   name: string | null
   sequence: number | null
   minuteOffset: number | null
+  latitude: number | null
+  longitude: number | null
   isTerminal: boolean | null
 }
 
@@ -53,6 +59,8 @@ export type RoutePointMaxAggregateOutputType = {
   name: string | null
   sequence: number | null
   minuteOffset: number | null
+  latitude: number | null
+  longitude: number | null
   isTerminal: boolean | null
 }
 
@@ -63,6 +71,8 @@ export type RoutePointCountAggregateOutputType = {
   name: number
   sequence: number
   minuteOffset: number
+  latitude: number
+  longitude: number
   isTerminal: number
   _all: number
 }
@@ -71,11 +81,15 @@ export type RoutePointCountAggregateOutputType = {
 export type RoutePointAvgAggregateInputType = {
   sequence?: true
   minuteOffset?: true
+  latitude?: true
+  longitude?: true
 }
 
 export type RoutePointSumAggregateInputType = {
   sequence?: true
   minuteOffset?: true
+  latitude?: true
+  longitude?: true
 }
 
 export type RoutePointMinAggregateInputType = {
@@ -85,6 +99,8 @@ export type RoutePointMinAggregateInputType = {
   name?: true
   sequence?: true
   minuteOffset?: true
+  latitude?: true
+  longitude?: true
   isTerminal?: true
 }
 
@@ -95,6 +111,8 @@ export type RoutePointMaxAggregateInputType = {
   name?: true
   sequence?: true
   minuteOffset?: true
+  latitude?: true
+  longitude?: true
   isTerminal?: true
 }
 
@@ -105,6 +123,8 @@ export type RoutePointCountAggregateInputType = {
   name?: true
   sequence?: true
   minuteOffset?: true
+  latitude?: true
+  longitude?: true
   isTerminal?: true
   _all?: true
 }
@@ -202,6 +222,8 @@ export type RoutePointGroupByOutputType = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude: number | null
+  longitude: number | null
   isTerminal: boolean
   _count: RoutePointCountAggregateOutputType | null
   _avg: RoutePointAvgAggregateOutputType | null
@@ -235,6 +257,8 @@ export type RoutePointWhereInput = {
   name?: Prisma.StringFilter<"RoutePoint"> | string
   sequence?: Prisma.IntFilter<"RoutePoint"> | number
   minuteOffset?: Prisma.IntFilter<"RoutePoint"> | number
+  latitude?: Prisma.FloatNullableFilter<"RoutePoint"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"RoutePoint"> | number | null
   isTerminal?: Prisma.BoolFilter<"RoutePoint"> | boolean
   route?: Prisma.XOR<Prisma.RouteScalarRelationFilter, Prisma.RouteWhereInput>
   bookings?: Prisma.BookingListRelationFilter
@@ -247,6 +271,8 @@ export type RoutePointOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   minuteOffset?: Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   isTerminal?: Prisma.SortOrder
   route?: Prisma.RouteOrderByWithRelationInput
   bookings?: Prisma.BookingOrderByRelationAggregateInput
@@ -263,6 +289,8 @@ export type RoutePointWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"RoutePoint"> | string
   sequence?: Prisma.IntFilter<"RoutePoint"> | number
   minuteOffset?: Prisma.IntFilter<"RoutePoint"> | number
+  latitude?: Prisma.FloatNullableFilter<"RoutePoint"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"RoutePoint"> | number | null
   isTerminal?: Prisma.BoolFilter<"RoutePoint"> | boolean
   route?: Prisma.XOR<Prisma.RouteScalarRelationFilter, Prisma.RouteWhereInput>
   bookings?: Prisma.BookingListRelationFilter
@@ -275,6 +303,8 @@ export type RoutePointOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   minuteOffset?: Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   isTerminal?: Prisma.SortOrder
   _count?: Prisma.RoutePointCountOrderByAggregateInput
   _avg?: Prisma.RoutePointAvgOrderByAggregateInput
@@ -293,6 +323,8 @@ export type RoutePointScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"RoutePoint"> | string
   sequence?: Prisma.IntWithAggregatesFilter<"RoutePoint"> | number
   minuteOffset?: Prisma.IntWithAggregatesFilter<"RoutePoint"> | number
+  latitude?: Prisma.FloatNullableWithAggregatesFilter<"RoutePoint"> | number | null
+  longitude?: Prisma.FloatNullableWithAggregatesFilter<"RoutePoint"> | number | null
   isTerminal?: Prisma.BoolWithAggregatesFilter<"RoutePoint"> | boolean
 }
 
@@ -302,6 +334,8 @@ export type RoutePointCreateInput = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude?: number | null
+  longitude?: number | null
   isTerminal?: boolean
   route: Prisma.RouteCreateNestedOneWithoutPointsInput
   bookings?: Prisma.BookingCreateNestedManyWithoutBoardingPointInput
@@ -314,6 +348,8 @@ export type RoutePointUncheckedCreateInput = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude?: number | null
+  longitude?: number | null
   isTerminal?: boolean
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutBoardingPointInput
 }
@@ -324,6 +360,8 @@ export type RoutePointUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   route?: Prisma.RouteUpdateOneRequiredWithoutPointsNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutBoardingPointNestedInput
@@ -336,6 +374,8 @@ export type RoutePointUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutBoardingPointNestedInput
 }
@@ -347,6 +387,8 @@ export type RoutePointCreateManyInput = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude?: number | null
+  longitude?: number | null
   isTerminal?: boolean
 }
 
@@ -356,6 +398,8 @@ export type RoutePointUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -366,6 +410,8 @@ export type RoutePointUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -392,12 +438,16 @@ export type RoutePointCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   minuteOffset?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   isTerminal?: Prisma.SortOrder
 }
 
 export type RoutePointAvgOrderByAggregateInput = {
   sequence?: Prisma.SortOrder
   minuteOffset?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type RoutePointMaxOrderByAggregateInput = {
@@ -407,6 +457,8 @@ export type RoutePointMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   minuteOffset?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   isTerminal?: Prisma.SortOrder
 }
 
@@ -417,12 +469,16 @@ export type RoutePointMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   minuteOffset?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   isTerminal?: Prisma.SortOrder
 }
 
 export type RoutePointSumOrderByAggregateInput = {
   sequence?: Prisma.SortOrder
   minuteOffset?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type RoutePointScalarRelationFilter = {
@@ -476,6 +532,14 @@ export type EnumRouteDirectionFieldUpdateOperationsInput = {
   set?: $Enums.RouteDirection
 }
 
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type RoutePointCreateNestedOneWithoutBookingsInput = {
   create?: Prisma.XOR<Prisma.RoutePointCreateWithoutBookingsInput, Prisma.RoutePointUncheckedCreateWithoutBookingsInput>
   connectOrCreate?: Prisma.RoutePointCreateOrConnectWithoutBookingsInput
@@ -496,6 +560,8 @@ export type RoutePointCreateWithoutRouteInput = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude?: number | null
+  longitude?: number | null
   isTerminal?: boolean
   bookings?: Prisma.BookingCreateNestedManyWithoutBoardingPointInput
 }
@@ -506,6 +572,8 @@ export type RoutePointUncheckedCreateWithoutRouteInput = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude?: number | null
+  longitude?: number | null
   isTerminal?: boolean
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutBoardingPointInput
 }
@@ -546,6 +614,8 @@ export type RoutePointScalarWhereInput = {
   name?: Prisma.StringFilter<"RoutePoint"> | string
   sequence?: Prisma.IntFilter<"RoutePoint"> | number
   minuteOffset?: Prisma.IntFilter<"RoutePoint"> | number
+  latitude?: Prisma.FloatNullableFilter<"RoutePoint"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"RoutePoint"> | number | null
   isTerminal?: Prisma.BoolFilter<"RoutePoint"> | boolean
 }
 
@@ -555,6 +625,8 @@ export type RoutePointCreateWithoutBookingsInput = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude?: number | null
+  longitude?: number | null
   isTerminal?: boolean
   route: Prisma.RouteCreateNestedOneWithoutPointsInput
 }
@@ -566,6 +638,8 @@ export type RoutePointUncheckedCreateWithoutBookingsInput = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude?: number | null
+  longitude?: number | null
   isTerminal?: boolean
 }
 
@@ -591,6 +665,8 @@ export type RoutePointUpdateWithoutBookingsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   route?: Prisma.RouteUpdateOneRequiredWithoutPointsNestedInput
 }
@@ -602,6 +678,8 @@ export type RoutePointUncheckedUpdateWithoutBookingsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -611,6 +689,8 @@ export type RoutePointCreateManyRouteInput = {
   name: string
   sequence: number
   minuteOffset: number
+  latitude?: number | null
+  longitude?: number | null
   isTerminal?: boolean
 }
 
@@ -620,6 +700,8 @@ export type RoutePointUpdateWithoutRouteInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bookings?: Prisma.BookingUpdateManyWithoutBoardingPointNestedInput
 }
@@ -630,6 +712,8 @@ export type RoutePointUncheckedUpdateWithoutRouteInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutBoardingPointNestedInput
 }
@@ -640,6 +724,8 @@ export type RoutePointUncheckedUpdateManyWithoutRouteInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   minuteOffset?: Prisma.IntFieldUpdateOperationsInput | number
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isTerminal?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -681,6 +767,8 @@ export type RoutePointSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   name?: boolean
   sequence?: boolean
   minuteOffset?: boolean
+  latitude?: boolean
+  longitude?: boolean
   isTerminal?: boolean
   route?: boolean | Prisma.RouteDefaultArgs<ExtArgs>
   bookings?: boolean | Prisma.RoutePoint$bookingsArgs<ExtArgs>
@@ -694,6 +782,8 @@ export type RoutePointSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   name?: boolean
   sequence?: boolean
   minuteOffset?: boolean
+  latitude?: boolean
+  longitude?: boolean
   isTerminal?: boolean
   route?: boolean | Prisma.RouteDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["routePoint"]>
@@ -705,6 +795,8 @@ export type RoutePointSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   name?: boolean
   sequence?: boolean
   minuteOffset?: boolean
+  latitude?: boolean
+  longitude?: boolean
   isTerminal?: boolean
   route?: boolean | Prisma.RouteDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["routePoint"]>
@@ -716,10 +808,12 @@ export type RoutePointSelectScalar = {
   name?: boolean
   sequence?: boolean
   minuteOffset?: boolean
+  latitude?: boolean
+  longitude?: boolean
   isTerminal?: boolean
 }
 
-export type RoutePointOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "routeId" | "direction" | "name" | "sequence" | "minuteOffset" | "isTerminal", ExtArgs["result"]["routePoint"]>
+export type RoutePointOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "routeId" | "direction" | "name" | "sequence" | "minuteOffset" | "latitude" | "longitude" | "isTerminal", ExtArgs["result"]["routePoint"]>
 export type RoutePointInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   route?: boolean | Prisma.RouteDefaultArgs<ExtArgs>
   bookings?: boolean | Prisma.RoutePoint$bookingsArgs<ExtArgs>
@@ -745,6 +839,8 @@ export type $RoutePointPayload<ExtArgs extends runtime.Types.Extensions.Internal
     name: string
     sequence: number
     minuteOffset: number
+    latitude: number | null
+    longitude: number | null
     isTerminal: boolean
   }, ExtArgs["result"]["routePoint"]>
   composites: {}
@@ -1177,6 +1273,8 @@ export interface RoutePointFieldRefs {
   readonly name: Prisma.FieldRef<"RoutePoint", 'String'>
   readonly sequence: Prisma.FieldRef<"RoutePoint", 'Int'>
   readonly minuteOffset: Prisma.FieldRef<"RoutePoint", 'Int'>
+  readonly latitude: Prisma.FieldRef<"RoutePoint", 'Float'>
+  readonly longitude: Prisma.FieldRef<"RoutePoint", 'Float'>
   readonly isTerminal: Prisma.FieldRef<"RoutePoint", 'Boolean'>
 }
     

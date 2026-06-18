@@ -28,10 +28,12 @@ export type AggregateTrip = {
 
 export type TripAvgAggregateOutputType = {
   bookedSeats: number | null
+  manualSeats: number | null
 }
 
 export type TripSumAggregateOutputType = {
   bookedSeats: number | null
+  manualSeats: number | null
 }
 
 export type TripMinAggregateOutputType = {
@@ -46,6 +48,7 @@ export type TripMinAggregateOutputType = {
   completedAt: Date | null
   driverId: string | null
   bookedSeats: number | null
+  manualSeats: number | null
   adminOverride: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -63,6 +66,7 @@ export type TripMaxAggregateOutputType = {
   completedAt: Date | null
   driverId: string | null
   bookedSeats: number | null
+  manualSeats: number | null
   adminOverride: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -80,6 +84,7 @@ export type TripCountAggregateOutputType = {
   completedAt: number
   driverId: number
   bookedSeats: number
+  manualSeats: number
   adminOverride: number
   createdAt: number
   updatedAt: number
@@ -89,10 +94,12 @@ export type TripCountAggregateOutputType = {
 
 export type TripAvgAggregateInputType = {
   bookedSeats?: true
+  manualSeats?: true
 }
 
 export type TripSumAggregateInputType = {
   bookedSeats?: true
+  manualSeats?: true
 }
 
 export type TripMinAggregateInputType = {
@@ -107,6 +114,7 @@ export type TripMinAggregateInputType = {
   completedAt?: true
   driverId?: true
   bookedSeats?: true
+  manualSeats?: true
   adminOverride?: true
   createdAt?: true
   updatedAt?: true
@@ -124,6 +132,7 @@ export type TripMaxAggregateInputType = {
   completedAt?: true
   driverId?: true
   bookedSeats?: true
+  manualSeats?: true
   adminOverride?: true
   createdAt?: true
   updatedAt?: true
@@ -141,6 +150,7 @@ export type TripCountAggregateInputType = {
   completedAt?: true
   driverId?: true
   bookedSeats?: true
+  manualSeats?: true
   adminOverride?: true
   createdAt?: true
   updatedAt?: true
@@ -245,6 +255,7 @@ export type TripGroupByOutputType = {
   completedAt: Date | null
   driverId: string | null
   bookedSeats: number
+  manualSeats: number
   adminOverride: boolean
   createdAt: Date
   updatedAt: Date
@@ -285,6 +296,7 @@ export type TripWhereInput = {
   completedAt?: Prisma.DateTimeNullableFilter<"Trip"> | Date | string | null
   driverId?: Prisma.StringNullableFilter<"Trip"> | string | null
   bookedSeats?: Prisma.IntFilter<"Trip"> | number
+  manualSeats?: Prisma.IntFilter<"Trip"> | number
   adminOverride?: Prisma.BoolFilter<"Trip"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
@@ -305,6 +317,7 @@ export type TripOrderByWithRelationInput = {
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   driverId?: Prisma.SortOrderInput | Prisma.SortOrder
   bookedSeats?: Prisma.SortOrder
+  manualSeats?: Prisma.SortOrder
   adminOverride?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -328,6 +341,7 @@ export type TripWhereUniqueInput = Prisma.AtLeast<{
   completedAt?: Prisma.DateTimeNullableFilter<"Trip"> | Date | string | null
   driverId?: Prisma.StringNullableFilter<"Trip"> | string | null
   bookedSeats?: Prisma.IntFilter<"Trip"> | number
+  manualSeats?: Prisma.IntFilter<"Trip"> | number
   adminOverride?: Prisma.BoolFilter<"Trip"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
@@ -348,6 +362,7 @@ export type TripOrderByWithAggregationInput = {
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   driverId?: Prisma.SortOrderInput | Prisma.SortOrder
   bookedSeats?: Prisma.SortOrder
+  manualSeats?: Prisma.SortOrder
   adminOverride?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -373,6 +388,7 @@ export type TripScalarWhereWithAggregatesInput = {
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Trip"> | Date | string | null
   driverId?: Prisma.StringNullableWithAggregatesFilter<"Trip"> | string | null
   bookedSeats?: Prisma.IntWithAggregatesFilter<"Trip"> | number
+  manualSeats?: Prisma.IntWithAggregatesFilter<"Trip"> | number
   adminOverride?: Prisma.BoolWithAggregatesFilter<"Trip"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Trip"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Trip"> | Date | string
@@ -388,6 +404,7 @@ export type TripCreateInput = {
   departedAt?: Date | string | null
   completedAt?: Date | string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -408,6 +425,7 @@ export type TripUncheckedCreateInput = {
   completedAt?: Date | string | null
   driverId?: string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -424,6 +442,7 @@ export type TripUpdateInput = {
   departedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -444,6 +463,7 @@ export type TripUncheckedUpdateInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   driverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -462,6 +482,7 @@ export type TripCreateManyInput = {
   completedAt?: Date | string | null
   driverId?: string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -477,6 +498,7 @@ export type TripUpdateManyMutationInput = {
   departedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -494,6 +516,7 @@ export type TripUncheckedUpdateManyInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   driverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -521,6 +544,7 @@ export type TripCountOrderByAggregateInput = {
   completedAt?: Prisma.SortOrder
   driverId?: Prisma.SortOrder
   bookedSeats?: Prisma.SortOrder
+  manualSeats?: Prisma.SortOrder
   adminOverride?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -528,6 +552,7 @@ export type TripCountOrderByAggregateInput = {
 
 export type TripAvgOrderByAggregateInput = {
   bookedSeats?: Prisma.SortOrder
+  manualSeats?: Prisma.SortOrder
 }
 
 export type TripMaxOrderByAggregateInput = {
@@ -542,6 +567,7 @@ export type TripMaxOrderByAggregateInput = {
   completedAt?: Prisma.SortOrder
   driverId?: Prisma.SortOrder
   bookedSeats?: Prisma.SortOrder
+  manualSeats?: Prisma.SortOrder
   adminOverride?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -559,6 +585,7 @@ export type TripMinOrderByAggregateInput = {
   completedAt?: Prisma.SortOrder
   driverId?: Prisma.SortOrder
   bookedSeats?: Prisma.SortOrder
+  manualSeats?: Prisma.SortOrder
   adminOverride?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -566,6 +593,7 @@ export type TripMinOrderByAggregateInput = {
 
 export type TripSumOrderByAggregateInput = {
   bookedSeats?: Prisma.SortOrder
+  manualSeats?: Prisma.SortOrder
 }
 
 export type TripScalarRelationFilter = {
@@ -685,6 +713,7 @@ export type TripCreateWithoutDriverInput = {
   departedAt?: Date | string | null
   completedAt?: Date | string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -703,6 +732,7 @@ export type TripUncheckedCreateWithoutDriverInput = {
   departedAt?: Date | string | null
   completedAt?: Date | string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -750,6 +780,7 @@ export type TripScalarWhereInput = {
   completedAt?: Prisma.DateTimeNullableFilter<"Trip"> | Date | string | null
   driverId?: Prisma.StringNullableFilter<"Trip"> | string | null
   bookedSeats?: Prisma.IntFilter<"Trip"> | number
+  manualSeats?: Prisma.IntFilter<"Trip"> | number
   adminOverride?: Prisma.BoolFilter<"Trip"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Trip"> | Date | string
@@ -765,6 +796,7 @@ export type TripCreateWithoutRouteInput = {
   departedAt?: Date | string | null
   completedAt?: Date | string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -783,6 +815,7 @@ export type TripUncheckedCreateWithoutRouteInput = {
   completedAt?: Date | string | null
   driverId?: string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -825,6 +858,7 @@ export type TripCreateWithoutBookingsInput = {
   departedAt?: Date | string | null
   completedAt?: Date | string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -844,6 +878,7 @@ export type TripUncheckedCreateWithoutBookingsInput = {
   completedAt?: Date | string | null
   driverId?: string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -875,6 +910,7 @@ export type TripUpdateWithoutBookingsInput = {
   departedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -894,6 +930,7 @@ export type TripUncheckedUpdateWithoutBookingsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   driverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -910,6 +947,7 @@ export type TripCreateManyDriverInput = {
   departedAt?: Date | string | null
   completedAt?: Date | string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -925,6 +963,7 @@ export type TripUpdateWithoutDriverInput = {
   departedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -943,6 +982,7 @@ export type TripUncheckedUpdateWithoutDriverInput = {
   departedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -960,6 +1000,7 @@ export type TripUncheckedUpdateManyWithoutDriverInput = {
   departedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -976,6 +1017,7 @@ export type TripCreateManyRouteInput = {
   completedAt?: Date | string | null
   driverId?: string | null
   bookedSeats?: number
+  manualSeats?: number
   adminOverride?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -991,6 +1033,7 @@ export type TripUpdateWithoutRouteInput = {
   departedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1009,6 +1052,7 @@ export type TripUncheckedUpdateWithoutRouteInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   driverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1026,6 +1070,7 @@ export type TripUncheckedUpdateManyWithoutRouteInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   driverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bookedSeats?: Prisma.IntFieldUpdateOperationsInput | number
+  manualSeats?: Prisma.IntFieldUpdateOperationsInput | number
   adminOverride?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1074,6 +1119,7 @@ export type TripSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   completedAt?: boolean
   driverId?: boolean
   bookedSeats?: boolean
+  manualSeats?: boolean
   adminOverride?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1095,6 +1141,7 @@ export type TripSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   completedAt?: boolean
   driverId?: boolean
   bookedSeats?: boolean
+  manualSeats?: boolean
   adminOverride?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1114,6 +1161,7 @@ export type TripSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   completedAt?: boolean
   driverId?: boolean
   bookedSeats?: boolean
+  manualSeats?: boolean
   adminOverride?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1133,12 +1181,13 @@ export type TripSelectScalar = {
   completedAt?: boolean
   driverId?: boolean
   bookedSeats?: boolean
+  manualSeats?: boolean
   adminOverride?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TripOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "routeId" | "direction" | "status" | "turnLabel" | "plannedDepartureAt" | "activatedAt" | "departedAt" | "completedAt" | "driverId" | "bookedSeats" | "adminOverride" | "createdAt" | "updatedAt", ExtArgs["result"]["trip"]>
+export type TripOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "routeId" | "direction" | "status" | "turnLabel" | "plannedDepartureAt" | "activatedAt" | "departedAt" | "completedAt" | "driverId" | "bookedSeats" | "manualSeats" | "adminOverride" | "createdAt" | "updatedAt", ExtArgs["result"]["trip"]>
 export type TripInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   route?: boolean | Prisma.RouteDefaultArgs<ExtArgs>
   driver?: boolean | Prisma.Trip$driverArgs<ExtArgs>
@@ -1173,6 +1222,7 @@ export type $TripPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     completedAt: Date | null
     driverId: string | null
     bookedSeats: number
+    manualSeats: number
     adminOverride: boolean
     createdAt: Date
     updatedAt: Date
@@ -1613,6 +1663,7 @@ export interface TripFieldRefs {
   readonly completedAt: Prisma.FieldRef<"Trip", 'DateTime'>
   readonly driverId: Prisma.FieldRef<"Trip", 'String'>
   readonly bookedSeats: Prisma.FieldRef<"Trip", 'Int'>
+  readonly manualSeats: Prisma.FieldRef<"Trip", 'Int'>
   readonly adminOverride: Prisma.FieldRef<"Trip", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Trip", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Trip", 'DateTime'>

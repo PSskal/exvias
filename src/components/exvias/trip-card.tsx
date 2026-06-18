@@ -2,14 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Clock3, UserRound, UsersRound } from "lucide-react";
 import { TripStatus } from "@/lib/generated/prisma/client";
-import { formatTime } from "@/lib/exvias/constants";
+import { formatTime, getVehicleOption } from "@/lib/exvias/constants";
 import { cn } from "@/lib/utils";
-
-const carImages = [
-  "/cars/transparent/avanzanegro-transparent.png",
-  "/cars/transparent/avanzarojo-transparent.png",
-  "/cars/transparent/avanzaverde-transparent.png",
-] as const;
 
 export function PassengerTripCard({
   id,
@@ -20,6 +14,7 @@ export function PassengerTripCard({
   capacity,
   minimumToStart,
   plate,
+  vehicleName,
   driverName,
   driverImage,
   index,
@@ -32,6 +27,7 @@ export function PassengerTripCard({
   capacity: number;
   minimumToStart: number;
   plate?: string | null;
+  vehicleName?: string | null;
   driverName?: string | null;
   driverImage?: string | null;
   index: number;
@@ -45,7 +41,7 @@ export function PassengerTripCard({
       : index === 1
         ? "SIGUIENTE TURNO"
         : `TURNO ${index + 1}`;
-  const carImage = carImages[index % carImages.length];
+  const vehicle = getVehicleOption(vehicleName);
   const seatProgress = Math.min(100, (bookedSeats / capacity) * 100);
 
   return (
@@ -70,8 +66,8 @@ export function PassengerTripCard({
 
         <div className="relative mx-auto mt-1 h-36 w-full">
           <Image
-            src={carImage}
-            alt="Vehículo disponible"
+            src={vehicle.image}
+            alt={vehicle.name}
             fill
             sizes="(max-width: 480px) 100vw, 420px"
             className="scale-110 object-contain drop-shadow-[0_18px_20px_rgba(15,23,42,0.20)]"
@@ -94,6 +90,9 @@ export function PassengerTripCard({
               <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">
                 <Clock3 className="size-3" />
                 {plate ?? "EXV-02"}
+              </span>
+              <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">
+                {vehicle.shortName}
               </span>
             </div>
             <div className="mt-3 flex items-center gap-2">

@@ -1,12 +1,8 @@
 import "dotenv/config";
 import prisma from "../src/lib/prisma";
 import {
-  BookingStatus,
-  PaymentStatus,
-  QueueStatus,
   RouteDirection,
   TripStatus,
-  UserRole,
 } from "../src/lib/generated/prisma/client";
 import { defaultRoutePoints, EXVIASS } from "../src/lib/exvias/constants";
 
@@ -15,6 +11,29 @@ function addMinutes(date: Date, minutes: number) {
 }
 
 async function main() {
+  const demoDriverEmails = [
+    "juan.carlos@exviass.test",
+    "luis.mamani@exviass.test",
+    "mario.quispe@exviass.test",
+    "cesar.huaman@exviass.test",
+    "edgar.puma@exviass.test",
+    "raul.condori@exviass.test",
+  ];
+
+  await prisma.booking.deleteMany({
+    where: {
+      OR: [
+        { passengerName: { startsWith: "Pasajero Demo" } },
+        { passengerPhone: { startsWith: "90000000" } },
+      ],
+    },
+  });
+  await prisma.driverQueue.deleteMany();
+
+  await prisma.user.deleteMany({
+    where: { email: { in: demoDriverEmails } },
+  });
+
   const route = await prisma.route.upsert({
     where: {
       origin_destination: {
@@ -54,6 +73,8 @@ async function main() {
         update: {
           name: point.name,
           minuteOffset: point.minuteOffset,
+          latitude: point.latitude,
+          longitude: point.longitude,
           isTerminal: point.isTerminal ?? false,
         },
         create: {
@@ -62,41 +83,13 @@ async function main() {
           sequence: index + 1,
           name: point.name,
           minuteOffset: point.minuteOffset,
+          latitude: point.latitude,
+          longitude: point.longitude,
           isTerminal: point.isTerminal ?? false,
         },
       });
     }
   }
-
-  const driverUser = await prisma.user.upsert({
-    where: { email: "juan.carlos@exviass.test" },
-    update: { name: "Juan Carlos", role: UserRole.DRIVER },
-    create: {
-      id: "seed-driver-juan-carlos",
-      name: "Juan Carlos",
-      email: "juan.carlos@exviass.test",
-      emailVerified: true,
-      role: UserRole.DRIVER,
-    },
-  });
-
-  const driver = await prisma.driverProfile.upsert({
-    where: { userId: driverUser.id },
-    update: {
-      phone: "987654321",
-      licensePlate: "EXV-01",
-      vehicleName: "Hyundai H1",
-      capacity: EXVIASS.vehicleCapacity,
-      isActive: true,
-    },
-    create: {
-      userId: driverUser.id,
-      phone: "987654321",
-      licensePlate: "EXV-01",
-      vehicleName: "Hyundai H1",
-      capacity: EXVIASS.vehicleCapacity,
-    },
-  });
 
   const now = new Date();
   const turnStarts: Record<RouteDirection, Date[]> = {
@@ -127,94 +120,31 @@ async function main() {
                 : `Turno ${index + 1}`,
           plannedDepartureAt: turnStarts[direction][index],
           status: index === 0 ? TripStatus.ACTIVE : TripStatus.QUEUED,
-          driverId: index === 0 ? driver.id : undefined,
         },
       });
     }
 
-    const waitingEntry = await prisma.driverQueue.findFirst({
-      where: {
-        routeId: route.id,
-        direction,
-        driverId: driver.id,
-        status: QueueStatus.WAITING,
-      },
+    const routeTrips = await prisma.trip.findMany({
+      where: { routeId: route.id, direction },
+      select: { id: true },
     });
 
-    if (!waitingEntry) {
-      await prisma.driverQueue.create({
-        data: {
-          routeId: route.id,
-          direction,
-          driverId: driver.id,
-          position: 1,
-          status: QueueStatus.WAITING,
+    for (const trip of routeTrips) {
+      const bookedSeats = await prisma.booking.count({
+        where: {
+          tripId: trip.id,
+          status: { not: "CANCELLED" },
         },
+      });
+
+      await prisma.trip.update({
+        where: { id: trip.id },
+        data: { bookedSeats },
       });
     }
   }
 
-  const firstTrip = await prisma.trip.findFirst({
-    where: {
-      routeId: route.id,
-      direction: RouteDirection.CUSCO_TO_COLQUEPATA,
-      status: { in: [TripStatus.QUEUED, TripStatus.ACTIVE, TripStatus.BOARDING] },
-    },
-    orderBy: { plannedDepartureAt: "asc" },
-  });
-
-  if (firstTrip) {
-    await prisma.trip.update({
-      where: { id: firstTrip.id },
-      data: {
-        status: TripStatus.ACTIVE,
-        driverId: driver.id,
-      },
-    });
-
-    const boardingPoint = await prisma.routePoint.findFirstOrThrow({
-      where: {
-        routeId: route.id,
-        direction: RouteDirection.CUSCO_TO_COLQUEPATA,
-        name: "Wanchaq",
-      },
-    });
-    const existingBookings = await prisma.booking.count({
-      where: { tripId: firstTrip.id },
-    });
-
-    for (let index = existingBookings; index < 3; index++) {
-      await prisma.booking.create({
-        data: {
-          tripId: firstTrip.id,
-          passengerName: `Pasajero Demo ${index + 1}`,
-          passengerPhone: `90000000${index + 1}`,
-          seatNumber: index + 1,
-          boardingPointId: boardingPoint.id,
-          status: index === 0 ? BookingStatus.PAID_PARTIAL : BookingStatus.RESERVED,
-          amountDuePen: EXVIASS.depositPen,
-          payment: {
-            create: {
-              amountPen: EXVIASS.depositPen,
-              status: index === 0 ? PaymentStatus.APPROVED : PaymentStatus.PENDING,
-              proofUrl: index === 0 ? "seed-demo" : undefined,
-            },
-          },
-        },
-      });
-    }
-
-    await prisma.trip.update({
-      where: { id: firstTrip.id },
-      data: {
-        bookedSeats: await prisma.booking.count({
-          where: { tripId: firstTrip.id, status: { not: BookingStatus.CANCELLED } },
-        }),
-      },
-    });
-  }
-
-  console.log("Seed EXVIASS completado.");
+  console.log("Seed EXVIASS completado sin conductores demo.");
 }
 
 main()

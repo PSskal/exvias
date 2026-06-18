@@ -7,9 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:exvias": "tsx scripts/seed-exvias.ts"
+    "seed:exvias": "tsx scripts/seed-exvias.ts",
+    "cleanup:stale-trips": "tsx scripts/cleanup-stale-trips.ts",
+    "normalize:published-trips": "tsx scripts/normalize-published-trips.ts"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "better-auth": "^1.6.10",

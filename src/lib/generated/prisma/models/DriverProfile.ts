@@ -38,6 +38,8 @@ export type DriverProfileMinAggregateOutputType = {
   id: string | null
   userId: string | null
   phone: string | null
+  yapePhone: string | null
+  yapeName: string | null
   licensePlate: string | null
   vehicleName: string | null
   capacity: number | null
@@ -50,6 +52,8 @@ export type DriverProfileMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   phone: string | null
+  yapePhone: string | null
+  yapeName: string | null
   licensePlate: string | null
   vehicleName: string | null
   capacity: number | null
@@ -62,6 +66,8 @@ export type DriverProfileCountAggregateOutputType = {
   id: number
   userId: number
   phone: number
+  yapePhone: number
+  yapeName: number
   licensePlate: number
   vehicleName: number
   capacity: number
@@ -84,6 +90,8 @@ export type DriverProfileMinAggregateInputType = {
   id?: true
   userId?: true
   phone?: true
+  yapePhone?: true
+  yapeName?: true
   licensePlate?: true
   vehicleName?: true
   capacity?: true
@@ -96,6 +104,8 @@ export type DriverProfileMaxAggregateInputType = {
   id?: true
   userId?: true
   phone?: true
+  yapePhone?: true
+  yapeName?: true
   licensePlate?: true
   vehicleName?: true
   capacity?: true
@@ -108,6 +118,8 @@ export type DriverProfileCountAggregateInputType = {
   id?: true
   userId?: true
   phone?: true
+  yapePhone?: true
+  yapeName?: true
   licensePlate?: true
   vehicleName?: true
   capacity?: true
@@ -207,6 +219,8 @@ export type DriverProfileGroupByOutputType = {
   id: string
   userId: string
   phone: string | null
+  yapePhone: string | null
+  yapeName: string | null
   licensePlate: string | null
   vehicleName: string | null
   capacity: number
@@ -242,6 +256,8 @@ export type DriverProfileWhereInput = {
   id?: Prisma.StringFilter<"DriverProfile"> | string
   userId?: Prisma.StringFilter<"DriverProfile"> | string
   phone?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
+  yapePhone?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
+  yapeName?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   licensePlate?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   vehicleName?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   capacity?: Prisma.IntFilter<"DriverProfile"> | number
@@ -251,12 +267,15 @@ export type DriverProfileWhereInput = {
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   queueEntries?: Prisma.DriverQueueListRelationFilter
   trips?: Prisma.TripListRelationFilter
+  confirmedPayments?: Prisma.PaymentListRelationFilter
 }
 
 export type DriverProfileOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  yapePhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  yapeName?: Prisma.SortOrderInput | Prisma.SortOrder
   licensePlate?: Prisma.SortOrderInput | Prisma.SortOrder
   vehicleName?: Prisma.SortOrderInput | Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -266,6 +285,7 @@ export type DriverProfileOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   queueEntries?: Prisma.DriverQueueOrderByRelationAggregateInput
   trips?: Prisma.TripOrderByRelationAggregateInput
+  confirmedPayments?: Prisma.PaymentOrderByRelationAggregateInput
 }
 
 export type DriverProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -275,6 +295,8 @@ export type DriverProfileWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.DriverProfileWhereInput[]
   NOT?: Prisma.DriverProfileWhereInput | Prisma.DriverProfileWhereInput[]
   phone?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
+  yapePhone?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
+  yapeName?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   licensePlate?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   vehicleName?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   capacity?: Prisma.IntFilter<"DriverProfile"> | number
@@ -284,12 +306,15 @@ export type DriverProfileWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   queueEntries?: Prisma.DriverQueueListRelationFilter
   trips?: Prisma.TripListRelationFilter
+  confirmedPayments?: Prisma.PaymentListRelationFilter
 }, "id" | "userId">
 
 export type DriverProfileOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  yapePhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  yapeName?: Prisma.SortOrderInput | Prisma.SortOrder
   licensePlate?: Prisma.SortOrderInput | Prisma.SortOrder
   vehicleName?: Prisma.SortOrderInput | Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -310,6 +335,8 @@ export type DriverProfileScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"DriverProfile"> | string
   userId?: Prisma.StringWithAggregatesFilter<"DriverProfile"> | string
   phone?: Prisma.StringNullableWithAggregatesFilter<"DriverProfile"> | string | null
+  yapePhone?: Prisma.StringNullableWithAggregatesFilter<"DriverProfile"> | string | null
+  yapeName?: Prisma.StringNullableWithAggregatesFilter<"DriverProfile"> | string | null
   licensePlate?: Prisma.StringNullableWithAggregatesFilter<"DriverProfile"> | string | null
   vehicleName?: Prisma.StringNullableWithAggregatesFilter<"DriverProfile"> | string | null
   capacity?: Prisma.IntWithAggregatesFilter<"DriverProfile"> | number
@@ -321,6 +348,8 @@ export type DriverProfileScalarWhereWithAggregatesInput = {
 export type DriverProfileCreateInput = {
   id?: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -330,12 +359,15 @@ export type DriverProfileCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
 }
 
 export type DriverProfileUncheckedCreateInput = {
   id?: string
   userId: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -344,11 +376,14 @@ export type DriverProfileUncheckedCreateInput = {
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
 }
 
 export type DriverProfileUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -358,12 +393,15 @@ export type DriverProfileUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
 }
 
 export type DriverProfileUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -372,12 +410,15 @@ export type DriverProfileUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput
 }
 
 export type DriverProfileCreateManyInput = {
   id?: string
   userId: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -389,6 +430,8 @@ export type DriverProfileCreateManyInput = {
 export type DriverProfileUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -401,6 +444,8 @@ export type DriverProfileUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -418,6 +463,8 @@ export type DriverProfileCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  yapePhone?: Prisma.SortOrder
+  yapeName?: Prisma.SortOrder
   licensePlate?: Prisma.SortOrder
   vehicleName?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -434,6 +481,8 @@ export type DriverProfileMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  yapePhone?: Prisma.SortOrder
+  yapeName?: Prisma.SortOrder
   licensePlate?: Prisma.SortOrder
   vehicleName?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -446,6 +495,8 @@ export type DriverProfileMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  yapePhone?: Prisma.SortOrder
+  yapeName?: Prisma.SortOrder
   licensePlate?: Prisma.SortOrder
   vehicleName?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
@@ -519,6 +570,22 @@ export type DriverProfileUpdateOneWithoutTripsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DriverProfileUpdateToOneWithWhereWithoutTripsInput, Prisma.DriverProfileUpdateWithoutTripsInput>, Prisma.DriverProfileUncheckedUpdateWithoutTripsInput>
 }
 
+export type DriverProfileCreateNestedOneWithoutConfirmedPaymentsInput = {
+  create?: Prisma.XOR<Prisma.DriverProfileCreateWithoutConfirmedPaymentsInput, Prisma.DriverProfileUncheckedCreateWithoutConfirmedPaymentsInput>
+  connectOrCreate?: Prisma.DriverProfileCreateOrConnectWithoutConfirmedPaymentsInput
+  connect?: Prisma.DriverProfileWhereUniqueInput
+}
+
+export type DriverProfileUpdateOneWithoutConfirmedPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.DriverProfileCreateWithoutConfirmedPaymentsInput, Prisma.DriverProfileUncheckedCreateWithoutConfirmedPaymentsInput>
+  connectOrCreate?: Prisma.DriverProfileCreateOrConnectWithoutConfirmedPaymentsInput
+  upsert?: Prisma.DriverProfileUpsertWithoutConfirmedPaymentsInput
+  disconnect?: Prisma.DriverProfileWhereInput | boolean
+  delete?: Prisma.DriverProfileWhereInput | boolean
+  connect?: Prisma.DriverProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DriverProfileUpdateToOneWithWhereWithoutConfirmedPaymentsInput, Prisma.DriverProfileUpdateWithoutConfirmedPaymentsInput>, Prisma.DriverProfileUncheckedUpdateWithoutConfirmedPaymentsInput>
+}
+
 export type DriverProfileCreateNestedOneWithoutQueueEntriesInput = {
   create?: Prisma.XOR<Prisma.DriverProfileCreateWithoutQueueEntriesInput, Prisma.DriverProfileUncheckedCreateWithoutQueueEntriesInput>
   connectOrCreate?: Prisma.DriverProfileCreateOrConnectWithoutQueueEntriesInput
@@ -536,6 +603,8 @@ export type DriverProfileUpdateOneRequiredWithoutQueueEntriesNestedInput = {
 export type DriverProfileCreateWithoutUserInput = {
   id?: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -544,11 +613,14 @@ export type DriverProfileCreateWithoutUserInput = {
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
 }
 
 export type DriverProfileUncheckedCreateWithoutUserInput = {
   id?: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -557,6 +629,7 @@ export type DriverProfileUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
 }
 
 export type DriverProfileCreateOrConnectWithoutUserInput = {
@@ -578,6 +651,8 @@ export type DriverProfileUpdateToOneWithWhereWithoutUserInput = {
 export type DriverProfileUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -586,11 +661,14 @@ export type DriverProfileUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
 }
 
 export type DriverProfileUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -599,11 +677,14 @@ export type DriverProfileUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput
 }
 
 export type DriverProfileCreateWithoutTripsInput = {
   id?: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -612,12 +693,15 @@ export type DriverProfileCreateWithoutTripsInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
 }
 
 export type DriverProfileUncheckedCreateWithoutTripsInput = {
   id?: string
   userId: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -625,6 +709,7 @@ export type DriverProfileUncheckedCreateWithoutTripsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
 }
 
 export type DriverProfileCreateOrConnectWithoutTripsInput = {
@@ -646,6 +731,8 @@ export type DriverProfileUpdateToOneWithWhereWithoutTripsInput = {
 export type DriverProfileUpdateWithoutTripsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -654,12 +741,15 @@ export type DriverProfileUpdateWithoutTripsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
 }
 
 export type DriverProfileUncheckedUpdateWithoutTripsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -667,11 +757,94 @@ export type DriverProfileUncheckedUpdateWithoutTripsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput
+}
+
+export type DriverProfileCreateWithoutConfirmedPaymentsInput = {
+  id?: string
+  phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
+  licensePlate?: string | null
+  vehicleName?: string | null
+  capacity?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
+  queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
+  trips?: Prisma.TripCreateNestedManyWithoutDriverInput
+}
+
+export type DriverProfileUncheckedCreateWithoutConfirmedPaymentsInput = {
+  id?: string
+  userId: string
+  phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
+  licensePlate?: string | null
+  vehicleName?: string | null
+  capacity?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
+  trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
+}
+
+export type DriverProfileCreateOrConnectWithoutConfirmedPaymentsInput = {
+  where: Prisma.DriverProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.DriverProfileCreateWithoutConfirmedPaymentsInput, Prisma.DriverProfileUncheckedCreateWithoutConfirmedPaymentsInput>
+}
+
+export type DriverProfileUpsertWithoutConfirmedPaymentsInput = {
+  update: Prisma.XOR<Prisma.DriverProfileUpdateWithoutConfirmedPaymentsInput, Prisma.DriverProfileUncheckedUpdateWithoutConfirmedPaymentsInput>
+  create: Prisma.XOR<Prisma.DriverProfileCreateWithoutConfirmedPaymentsInput, Prisma.DriverProfileUncheckedCreateWithoutConfirmedPaymentsInput>
+  where?: Prisma.DriverProfileWhereInput
+}
+
+export type DriverProfileUpdateToOneWithWhereWithoutConfirmedPaymentsInput = {
+  where?: Prisma.DriverProfileWhereInput
+  data: Prisma.XOR<Prisma.DriverProfileUpdateWithoutConfirmedPaymentsInput, Prisma.DriverProfileUncheckedUpdateWithoutConfirmedPaymentsInput>
+}
+
+export type DriverProfileUpdateWithoutConfirmedPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
+  queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
+  trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
+}
+
+export type DriverProfileUncheckedUpdateWithoutConfirmedPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
+  trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
 }
 
 export type DriverProfileCreateWithoutQueueEntriesInput = {
   id?: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -680,12 +853,15 @@ export type DriverProfileCreateWithoutQueueEntriesInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
   trips?: Prisma.TripCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
 }
 
 export type DriverProfileUncheckedCreateWithoutQueueEntriesInput = {
   id?: string
   userId: string
   phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
   licensePlate?: string | null
   vehicleName?: string | null
   capacity?: number
@@ -693,6 +869,7 @@ export type DriverProfileUncheckedCreateWithoutQueueEntriesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
 }
 
 export type DriverProfileCreateOrConnectWithoutQueueEntriesInput = {
@@ -714,6 +891,8 @@ export type DriverProfileUpdateToOneWithWhereWithoutQueueEntriesInput = {
 export type DriverProfileUpdateWithoutQueueEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -722,12 +901,15 @@ export type DriverProfileUpdateWithoutQueueEntriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
   trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
 }
 
 export type DriverProfileUncheckedUpdateWithoutQueueEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -735,6 +917,7 @@ export type DriverProfileUncheckedUpdateWithoutQueueEntriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput
 }
 
 
@@ -745,11 +928,13 @@ export type DriverProfileUncheckedUpdateWithoutQueueEntriesInput = {
 export type DriverProfileCountOutputType = {
   queueEntries: number
   trips: number
+  confirmedPayments: number
 }
 
 export type DriverProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   queueEntries?: boolean | DriverProfileCountOutputTypeCountQueueEntriesArgs
   trips?: boolean | DriverProfileCountOutputTypeCountTripsArgs
+  confirmedPayments?: boolean | DriverProfileCountOutputTypeCountConfirmedPaymentsArgs
 }
 
 /**
@@ -776,11 +961,20 @@ export type DriverProfileCountOutputTypeCountTripsArgs<ExtArgs extends runtime.T
   where?: Prisma.TripWhereInput
 }
 
+/**
+ * DriverProfileCountOutputType without action
+ */
+export type DriverProfileCountOutputTypeCountConfirmedPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
 
 export type DriverProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
   phone?: boolean
+  yapePhone?: boolean
+  yapeName?: boolean
   licensePlate?: boolean
   vehicleName?: boolean
   capacity?: boolean
@@ -790,6 +984,7 @@ export type DriverProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   queueEntries?: boolean | Prisma.DriverProfile$queueEntriesArgs<ExtArgs>
   trips?: boolean | Prisma.DriverProfile$tripsArgs<ExtArgs>
+  confirmedPayments?: boolean | Prisma.DriverProfile$confirmedPaymentsArgs<ExtArgs>
   _count?: boolean | Prisma.DriverProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["driverProfile"]>
 
@@ -797,6 +992,8 @@ export type DriverProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   userId?: boolean
   phone?: boolean
+  yapePhone?: boolean
+  yapeName?: boolean
   licensePlate?: boolean
   vehicleName?: boolean
   capacity?: boolean
@@ -810,6 +1007,8 @@ export type DriverProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   userId?: boolean
   phone?: boolean
+  yapePhone?: boolean
+  yapeName?: boolean
   licensePlate?: boolean
   vehicleName?: boolean
   capacity?: boolean
@@ -823,6 +1022,8 @@ export type DriverProfileSelectScalar = {
   id?: boolean
   userId?: boolean
   phone?: boolean
+  yapePhone?: boolean
+  yapeName?: boolean
   licensePlate?: boolean
   vehicleName?: boolean
   capacity?: boolean
@@ -831,11 +1032,12 @@ export type DriverProfileSelectScalar = {
   updatedAt?: boolean
 }
 
-export type DriverProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "phone" | "licensePlate" | "vehicleName" | "capacity" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["driverProfile"]>
+export type DriverProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "phone" | "yapePhone" | "yapeName" | "licensePlate" | "vehicleName" | "capacity" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["driverProfile"]>
 export type DriverProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   queueEntries?: boolean | Prisma.DriverProfile$queueEntriesArgs<ExtArgs>
   trips?: boolean | Prisma.DriverProfile$tripsArgs<ExtArgs>
+  confirmedPayments?: boolean | Prisma.DriverProfile$confirmedPaymentsArgs<ExtArgs>
   _count?: boolean | Prisma.DriverProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DriverProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -851,11 +1053,14 @@ export type $DriverProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     user: Prisma.$UserPayload<ExtArgs>
     queueEntries: Prisma.$DriverQueuePayload<ExtArgs>[]
     trips: Prisma.$TripPayload<ExtArgs>[]
+    confirmedPayments: Prisma.$PaymentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
     phone: string | null
+    yapePhone: string | null
+    yapeName: string | null
     licensePlate: string | null
     vehicleName: string | null
     capacity: number
@@ -1259,6 +1464,7 @@ export interface Prisma__DriverProfileClient<T, Null = never, ExtArgs extends ru
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   queueEntries<T extends Prisma.DriverProfile$queueEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DriverProfile$queueEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DriverQueuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   trips<T extends Prisma.DriverProfile$tripsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DriverProfile$tripsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TripPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  confirmedPayments<T extends Prisma.DriverProfile$confirmedPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DriverProfile$confirmedPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1291,6 +1497,8 @@ export interface DriverProfileFieldRefs {
   readonly id: Prisma.FieldRef<"DriverProfile", 'String'>
   readonly userId: Prisma.FieldRef<"DriverProfile", 'String'>
   readonly phone: Prisma.FieldRef<"DriverProfile", 'String'>
+  readonly yapePhone: Prisma.FieldRef<"DriverProfile", 'String'>
+  readonly yapeName: Prisma.FieldRef<"DriverProfile", 'String'>
   readonly licensePlate: Prisma.FieldRef<"DriverProfile", 'String'>
   readonly vehicleName: Prisma.FieldRef<"DriverProfile", 'String'>
   readonly capacity: Prisma.FieldRef<"DriverProfile", 'Int'>
@@ -1743,6 +1951,30 @@ export type DriverProfile$tripsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.TripScalarFieldEnum | Prisma.TripScalarFieldEnum[]
+}
+
+/**
+ * DriverProfile.confirmedPayments
+ */
+export type DriverProfile$confirmedPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
 }
 
 /**

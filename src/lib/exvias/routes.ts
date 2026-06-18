@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { RouteDirection } from "@/lib/generated/prisma/client";
+import { RouteDirection, TripStatus } from "@/lib/generated/prisma/client";
 import { defaultRoutePoints, EXVIASS } from "@/lib/exvias/constants";
 
 export async function ensureDefaultRoute() {
@@ -41,6 +41,8 @@ export async function ensureDefaultRoute() {
           name: point.name,
           sequence: index + 1,
           minuteOffset: point.minuteOffset,
+          latitude: point.latitude,
+          longitude: point.longitude,
           isTerminal: point.isTerminal ?? false,
         })),
       });
@@ -71,7 +73,10 @@ export async function getRoutesOverview() {
       },
       trips: {
         where: {
-          status: { in: ["QUEUED", "ACTIVE", "BOARDING"] },
+          status: {
+            in: [TripStatus.QUEUED, TripStatus.ACTIVE, TripStatus.BOARDING],
+          },
+          driverId: { not: null },
         },
         include: {
           bookings: true,

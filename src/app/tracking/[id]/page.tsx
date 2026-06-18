@@ -13,6 +13,7 @@ import { getBookingDetails } from "@/lib/exvias/trips";
 import {
   formatPen,
   formatTime,
+  passengerReservationStatus,
   routeDirectionLabels,
 } from "@/lib/exvias/constants";
 import {
@@ -42,30 +43,65 @@ export default async function TrackingPage({
           booking.boardingPoint.minuteOffset * 60_000,
       )
     : null;
+  const reservationStatus = passengerReservationStatus({
+    bookingStatus: booking.status,
+    paymentStatus: booking.payment?.status,
+  });
+  const isConfirmed = reservationStatus.tone === "success";
 
   return (
     <PhoneShell>
       <StatusBar />
       <BlueHeader title="Detalle del viaje" href="/my-trips" subtitle="Estado de tu reserva" />
       <ContentArea className="space-y-4">
-        {booking.payment?.status === "SUBMITTED" || booking.payment?.status === "APPROVED" ? (
-          <section className="rounded-[18px] bg-[#12B85F] px-5 py-7 text-center text-white shadow-lg">
-            <div className="mx-auto grid size-16 place-items-center rounded-full bg-white text-[#12B85F]">
-              <Check className="size-9 stroke-[3]" />
+        <section
+          className={
+            isConfirmed
+              ? "rounded-[18px] bg-[#12B85F] px-5 py-7 text-center text-white shadow-lg"
+              : "rounded-[18px] bg-[#F4B400] px-5 py-7 text-center text-white shadow-lg"
+          }
+        >
+            <div
+              className={
+                isConfirmed
+                  ? "mx-auto grid size-16 place-items-center rounded-full bg-white text-[#12B85F]"
+                  : "mx-auto grid size-16 place-items-center rounded-full bg-white text-[#B37B00]"
+              }
+            >
+              {isConfirmed ? (
+                <Check className="size-9 stroke-[3]" />
+              ) : (
+                <Clock className="size-9 stroke-[3]" />
+              )}
             </div>
-            <h1 className="mt-4 text-xl font-black">¡Tu viaje está reservado!</h1>
-            <p className="text-sm text-white/85">Gracias por tu reserva</p>
+            <h1 className="mt-4 text-xl font-black">
+              {reservationStatus.title}
+            </h1>
+            <p className="text-sm text-white/85">
+              {reservationStatus.description}
+            </p>
           </section>
-        ) : null}
 
         <AppCard>
-          <div className="rounded-[10px] bg-[#2ECC71]/12 p-3">
+          <div
+            className={
+              isConfirmed
+                ? "rounded-[10px] bg-[#2ECC71]/12 p-3"
+                : "rounded-[10px] bg-[#F4B400]/15 p-3"
+            }
+          >
             <p className="text-xs font-bold text-slate-500">Estado actual</p>
-            <p className="text-2xl font-black text-[#12B85F]">
-              {booking.trip.status === "ACTIVE" ? "En camino" : "Reservado"}
+            <p
+              className={
+                isConfirmed
+                  ? "text-2xl font-black text-[#12B85F]"
+                  : "text-2xl font-black text-[#B37B00]"
+              }
+            >
+              {reservationStatus.label}
             </p>
             <p className="text-sm text-slate-600">
-              El vehículo se dirige a tu punto de subida.
+              {reservationStatus.description}
             </p>
           </div>
 

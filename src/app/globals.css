@@ -128,3 +128,35 @@
     @apply font-sans;
   }
 }
+
+.exviass-map-marker {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border: 4px solid #ffffff;
+  border-radius: 9999px;
+  background: #1e5bff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.28);
+  position: relative;
+}
+
+.exviass-map-marker::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 9999px;
+  background: #ffffff;
+}
+
+.exviass-map-marker.is-terminal {
+  background: #e53935;
+}
+
+.exviass-map-marker.is-selected {
+  width: 34px;
+  height: 34px;
+  margin-left: -3px;
+  margin-top: -3px;
+  background: #2ecc71;
+  box-shadow: 0 16px 30px rgba(46, 204, 113, 0.36);
+}

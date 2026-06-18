@@ -88,10 +88,11 @@ export default async function TripsPage({
                 status={trip.status}
                 label={trip.turnLabel}
                 departure={trip.plannedDepartureAt}
-                bookedSeats={trip.bookedSeats}
+                bookedSeats={trip.bookedSeats + trip.manualSeats}
                 capacity={trip.route.capacity}
                 minimumToStart={trip.route.minimumToStart}
                 plate={trip.driver?.licensePlate}
+                vehicleName={trip.driver?.vehicleName}
                 driverName={trip.driver?.user.name}
                 driverImage={trip.driver?.user.image}
                 index={index}

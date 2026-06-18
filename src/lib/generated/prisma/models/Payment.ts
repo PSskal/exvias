@@ -43,6 +43,9 @@ export type PaymentMinAggregateOutputType = {
   proofUrl: string | null
   approvedAt: Date | null
   approvedById: string | null
+  confirmedByDriverId: string | null
+  confirmedByDriverAt: Date | null
+  rejectedReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +59,9 @@ export type PaymentMaxAggregateOutputType = {
   proofUrl: string | null
   approvedAt: Date | null
   approvedById: string | null
+  confirmedByDriverId: string | null
+  confirmedByDriverAt: Date | null
+  rejectedReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -69,6 +75,9 @@ export type PaymentCountAggregateOutputType = {
   proofUrl: number
   approvedAt: number
   approvedById: number
+  confirmedByDriverId: number
+  confirmedByDriverAt: number
+  rejectedReason: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -92,6 +101,9 @@ export type PaymentMinAggregateInputType = {
   proofUrl?: true
   approvedAt?: true
   approvedById?: true
+  confirmedByDriverId?: true
+  confirmedByDriverAt?: true
+  rejectedReason?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -105,6 +117,9 @@ export type PaymentMaxAggregateInputType = {
   proofUrl?: true
   approvedAt?: true
   approvedById?: true
+  confirmedByDriverId?: true
+  confirmedByDriverAt?: true
+  rejectedReason?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +133,9 @@ export type PaymentCountAggregateInputType = {
   proofUrl?: true
   approvedAt?: true
   approvedById?: true
+  confirmedByDriverId?: true
+  confirmedByDriverAt?: true
+  rejectedReason?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -218,6 +236,9 @@ export type PaymentGroupByOutputType = {
   proofUrl: string | null
   approvedAt: Date | null
   approvedById: string | null
+  confirmedByDriverId: string | null
+  confirmedByDriverAt: Date | null
+  rejectedReason: string | null
   createdAt: Date
   updatedAt: Date
   _count: PaymentCountAggregateOutputType | null
@@ -254,10 +275,14 @@ export type PaymentWhereInput = {
   proofUrl?: Prisma.StringNullableFilter<"Payment"> | string | null
   approvedAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null
   approvedById?: Prisma.StringNullableFilter<"Payment"> | string | null
+  confirmedByDriverId?: Prisma.StringNullableFilter<"Payment"> | string | null
+  confirmedByDriverAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null
+  rejectedReason?: Prisma.StringNullableFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  confirmedByDriver?: Prisma.XOR<Prisma.DriverProfileNullableScalarRelationFilter, Prisma.DriverProfileWhereInput> | null
 }
 
 export type PaymentOrderByWithRelationInput = {
@@ -269,10 +294,14 @@ export type PaymentOrderByWithRelationInput = {
   proofUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   approvedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  confirmedByDriverId?: Prisma.SortOrderInput | Prisma.SortOrder
+  confirmedByDriverAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   booking?: Prisma.BookingOrderByWithRelationInput
   approvedBy?: Prisma.UserOrderByWithRelationInput
+  confirmedByDriver?: Prisma.DriverProfileOrderByWithRelationInput
 }
 
 export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -287,10 +316,14 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   proofUrl?: Prisma.StringNullableFilter<"Payment"> | string | null
   approvedAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null
   approvedById?: Prisma.StringNullableFilter<"Payment"> | string | null
+  confirmedByDriverId?: Prisma.StringNullableFilter<"Payment"> | string | null
+  confirmedByDriverAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null
+  rejectedReason?: Prisma.StringNullableFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  confirmedByDriver?: Prisma.XOR<Prisma.DriverProfileNullableScalarRelationFilter, Prisma.DriverProfileWhereInput> | null
 }, "id" | "bookingId">
 
 export type PaymentOrderByWithAggregationInput = {
@@ -302,6 +335,9 @@ export type PaymentOrderByWithAggregationInput = {
   proofUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   approvedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  confirmedByDriverId?: Prisma.SortOrderInput | Prisma.SortOrder
+  confirmedByDriverAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PaymentCountOrderByAggregateInput
@@ -323,6 +359,9 @@ export type PaymentScalarWhereWithAggregatesInput = {
   proofUrl?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Payment"> | Date | string | null
   approvedById?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
+  confirmedByDriverId?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
+  confirmedByDriverAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Payment"> | Date | string | null
+  rejectedReason?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Payment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Payment"> | Date | string
 }
@@ -334,10 +373,13 @@ export type PaymentCreateInput = {
   amountPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: string | null
   approvedAt?: Date | string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   booking: Prisma.BookingCreateNestedOneWithoutPaymentInput
   approvedBy?: Prisma.UserCreateNestedOneWithoutApprovedPaymentsInput
+  confirmedByDriver?: Prisma.DriverProfileCreateNestedOneWithoutConfirmedPaymentsInput
 }
 
 export type PaymentUncheckedCreateInput = {
@@ -349,6 +391,9 @@ export type PaymentUncheckedCreateInput = {
   proofUrl?: string | null
   approvedAt?: Date | string | null
   approvedById?: string | null
+  confirmedByDriverId?: string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -360,10 +405,13 @@ export type PaymentUpdateInput = {
   amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   booking?: Prisma.BookingUpdateOneRequiredWithoutPaymentNestedInput
   approvedBy?: Prisma.UserUpdateOneWithoutApprovedPaymentsNestedInput
+  confirmedByDriver?: Prisma.DriverProfileUpdateOneWithoutConfirmedPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateInput = {
@@ -375,6 +423,9 @@ export type PaymentUncheckedUpdateInput = {
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -388,6 +439,9 @@ export type PaymentCreateManyInput = {
   proofUrl?: string | null
   approvedAt?: Date | string | null
   approvedById?: string | null
+  confirmedByDriverId?: string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -399,6 +453,8 @@ export type PaymentUpdateManyMutationInput = {
   amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -412,6 +468,9 @@ export type PaymentUncheckedUpdateManyInput = {
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -440,6 +499,9 @@ export type PaymentCountOrderByAggregateInput = {
   proofUrl?: Prisma.SortOrder
   approvedAt?: Prisma.SortOrder
   approvedById?: Prisma.SortOrder
+  confirmedByDriverId?: Prisma.SortOrder
+  confirmedByDriverAt?: Prisma.SortOrder
+  rejectedReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -457,6 +519,9 @@ export type PaymentMaxOrderByAggregateInput = {
   proofUrl?: Prisma.SortOrder
   approvedAt?: Prisma.SortOrder
   approvedById?: Prisma.SortOrder
+  confirmedByDriverId?: Prisma.SortOrder
+  confirmedByDriverAt?: Prisma.SortOrder
+  rejectedReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -470,6 +535,9 @@ export type PaymentMinOrderByAggregateInput = {
   proofUrl?: Prisma.SortOrder
   approvedAt?: Prisma.SortOrder
   approvedById?: Prisma.SortOrder
+  confirmedByDriverId?: Prisma.SortOrder
+  confirmedByDriverAt?: Prisma.SortOrder
+  rejectedReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -520,6 +588,48 @@ export type PaymentUncheckedUpdateManyWithoutApprovedByNestedInput = {
   deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
 }
 
+export type PaymentCreateNestedManyWithoutConfirmedByDriverInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutConfirmedByDriverInput, Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput> | Prisma.PaymentCreateWithoutConfirmedByDriverInput[] | Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput[]
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutConfirmedByDriverInput | Prisma.PaymentCreateOrConnectWithoutConfirmedByDriverInput[]
+  createMany?: Prisma.PaymentCreateManyConfirmedByDriverInputEnvelope
+  connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+}
+
+export type PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutConfirmedByDriverInput, Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput> | Prisma.PaymentCreateWithoutConfirmedByDriverInput[] | Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput[]
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutConfirmedByDriverInput | Prisma.PaymentCreateOrConnectWithoutConfirmedByDriverInput[]
+  createMany?: Prisma.PaymentCreateManyConfirmedByDriverInputEnvelope
+  connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+}
+
+export type PaymentUpdateManyWithoutConfirmedByDriverNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutConfirmedByDriverInput, Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput> | Prisma.PaymentCreateWithoutConfirmedByDriverInput[] | Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput[]
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutConfirmedByDriverInput | Prisma.PaymentCreateOrConnectWithoutConfirmedByDriverInput[]
+  upsert?: Prisma.PaymentUpsertWithWhereUniqueWithoutConfirmedByDriverInput | Prisma.PaymentUpsertWithWhereUniqueWithoutConfirmedByDriverInput[]
+  createMany?: Prisma.PaymentCreateManyConfirmedByDriverInputEnvelope
+  set?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  disconnect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  delete?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  update?: Prisma.PaymentUpdateWithWhereUniqueWithoutConfirmedByDriverInput | Prisma.PaymentUpdateWithWhereUniqueWithoutConfirmedByDriverInput[]
+  updateMany?: Prisma.PaymentUpdateManyWithWhereWithoutConfirmedByDriverInput | Prisma.PaymentUpdateManyWithWhereWithoutConfirmedByDriverInput[]
+  deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
+}
+
+export type PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutConfirmedByDriverInput, Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput> | Prisma.PaymentCreateWithoutConfirmedByDriverInput[] | Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput[]
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutConfirmedByDriverInput | Prisma.PaymentCreateOrConnectWithoutConfirmedByDriverInput[]
+  upsert?: Prisma.PaymentUpsertWithWhereUniqueWithoutConfirmedByDriverInput | Prisma.PaymentUpsertWithWhereUniqueWithoutConfirmedByDriverInput[]
+  createMany?: Prisma.PaymentCreateManyConfirmedByDriverInputEnvelope
+  set?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  disconnect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  delete?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  connect?: Prisma.PaymentWhereUniqueInput | Prisma.PaymentWhereUniqueInput[]
+  update?: Prisma.PaymentUpdateWithWhereUniqueWithoutConfirmedByDriverInput | Prisma.PaymentUpdateWithWhereUniqueWithoutConfirmedByDriverInput[]
+  updateMany?: Prisma.PaymentUpdateManyWithWhereWithoutConfirmedByDriverInput | Prisma.PaymentUpdateManyWithWhereWithoutConfirmedByDriverInput[]
+  deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
+}
+
 export type PaymentCreateNestedOneWithoutBookingInput = {
   create?: Prisma.XOR<Prisma.PaymentCreateWithoutBookingInput, Prisma.PaymentUncheckedCreateWithoutBookingInput>
   connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutBookingInput
@@ -567,9 +677,12 @@ export type PaymentCreateWithoutApprovedByInput = {
   amountPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: string | null
   approvedAt?: Date | string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   booking: Prisma.BookingCreateNestedOneWithoutPaymentInput
+  confirmedByDriver?: Prisma.DriverProfileCreateNestedOneWithoutConfirmedPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutApprovedByInput = {
@@ -580,6 +693,9 @@ export type PaymentUncheckedCreateWithoutApprovedByInput = {
   amountPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: string | null
   approvedAt?: Date | string | null
+  confirmedByDriverId?: string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -622,8 +738,67 @@ export type PaymentScalarWhereInput = {
   proofUrl?: Prisma.StringNullableFilter<"Payment"> | string | null
   approvedAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null
   approvedById?: Prisma.StringNullableFilter<"Payment"> | string | null
+  confirmedByDriverId?: Prisma.StringNullableFilter<"Payment"> | string | null
+  confirmedByDriverAt?: Prisma.DateTimeNullableFilter<"Payment"> | Date | string | null
+  rejectedReason?: Prisma.StringNullableFilter<"Payment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
+}
+
+export type PaymentCreateWithoutConfirmedByDriverInput = {
+  id?: string
+  method?: $Enums.PaymentMethod
+  status?: $Enums.PaymentStatus
+  amountPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  proofUrl?: string | null
+  approvedAt?: Date | string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  booking: Prisma.BookingCreateNestedOneWithoutPaymentInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutApprovedPaymentsInput
+}
+
+export type PaymentUncheckedCreateWithoutConfirmedByDriverInput = {
+  id?: string
+  bookingId: string
+  method?: $Enums.PaymentMethod
+  status?: $Enums.PaymentStatus
+  amountPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  proofUrl?: string | null
+  approvedAt?: Date | string | null
+  approvedById?: string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PaymentCreateOrConnectWithoutConfirmedByDriverInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutConfirmedByDriverInput, Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput>
+}
+
+export type PaymentCreateManyConfirmedByDriverInputEnvelope = {
+  data: Prisma.PaymentCreateManyConfirmedByDriverInput | Prisma.PaymentCreateManyConfirmedByDriverInput[]
+  skipDuplicates?: boolean
+}
+
+export type PaymentUpsertWithWhereUniqueWithoutConfirmedByDriverInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  update: Prisma.XOR<Prisma.PaymentUpdateWithoutConfirmedByDriverInput, Prisma.PaymentUncheckedUpdateWithoutConfirmedByDriverInput>
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutConfirmedByDriverInput, Prisma.PaymentUncheckedCreateWithoutConfirmedByDriverInput>
+}
+
+export type PaymentUpdateWithWhereUniqueWithoutConfirmedByDriverInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  data: Prisma.XOR<Prisma.PaymentUpdateWithoutConfirmedByDriverInput, Prisma.PaymentUncheckedUpdateWithoutConfirmedByDriverInput>
+}
+
+export type PaymentUpdateManyWithWhereWithoutConfirmedByDriverInput = {
+  where: Prisma.PaymentScalarWhereInput
+  data: Prisma.XOR<Prisma.PaymentUpdateManyMutationInput, Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverInput>
 }
 
 export type PaymentCreateWithoutBookingInput = {
@@ -633,9 +808,12 @@ export type PaymentCreateWithoutBookingInput = {
   amountPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: string | null
   approvedAt?: Date | string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   approvedBy?: Prisma.UserCreateNestedOneWithoutApprovedPaymentsInput
+  confirmedByDriver?: Prisma.DriverProfileCreateNestedOneWithoutConfirmedPaymentsInput
 }
 
 export type PaymentUncheckedCreateWithoutBookingInput = {
@@ -646,6 +824,9 @@ export type PaymentUncheckedCreateWithoutBookingInput = {
   proofUrl?: string | null
   approvedAt?: Date | string | null
   approvedById?: string | null
+  confirmedByDriverId?: string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -673,9 +854,12 @@ export type PaymentUpdateWithoutBookingInput = {
   amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedBy?: Prisma.UserUpdateOneWithoutApprovedPaymentsNestedInput
+  confirmedByDriver?: Prisma.DriverProfileUpdateOneWithoutConfirmedPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutBookingInput = {
@@ -686,6 +870,9 @@ export type PaymentUncheckedUpdateWithoutBookingInput = {
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -698,6 +885,9 @@ export type PaymentCreateManyApprovedByInput = {
   amountPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: string | null
   approvedAt?: Date | string | null
+  confirmedByDriverId?: string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -709,9 +899,12 @@ export type PaymentUpdateWithoutApprovedByInput = {
   amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   booking?: Prisma.BookingUpdateOneRequiredWithoutPaymentNestedInput
+  confirmedByDriver?: Prisma.DriverProfileUpdateOneWithoutConfirmedPaymentsNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutApprovedByInput = {
@@ -722,6 +915,9 @@ export type PaymentUncheckedUpdateWithoutApprovedByInput = {
   amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  confirmedByDriverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -734,6 +930,69 @@ export type PaymentUncheckedUpdateManyWithoutApprovedByInput = {
   amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  confirmedByDriverId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PaymentCreateManyConfirmedByDriverInput = {
+  id?: string
+  bookingId: string
+  method?: $Enums.PaymentMethod
+  status?: $Enums.PaymentStatus
+  amountPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  proofUrl?: string | null
+  approvedAt?: Date | string | null
+  approvedById?: string | null
+  confirmedByDriverAt?: Date | string | null
+  rejectedReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type PaymentUpdateWithoutConfirmedByDriverInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  booking?: Prisma.BookingUpdateOneRequiredWithoutPaymentNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutApprovedPaymentsNestedInput
+}
+
+export type PaymentUncheckedUpdateWithoutConfirmedByDriverInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PaymentUncheckedUpdateManyWithoutConfirmedByDriverInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  amountPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  proofUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedByDriverAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -749,10 +1008,14 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   proofUrl?: boolean
   approvedAt?: boolean
   approvedById?: boolean
+  confirmedByDriverId?: boolean
+  confirmedByDriverAt?: boolean
+  rejectedReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   approvedBy?: boolean | Prisma.Payment$approvedByArgs<ExtArgs>
+  confirmedByDriver?: boolean | Prisma.Payment$confirmedByDriverArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
 export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -764,10 +1027,14 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   proofUrl?: boolean
   approvedAt?: boolean
   approvedById?: boolean
+  confirmedByDriverId?: boolean
+  confirmedByDriverAt?: boolean
+  rejectedReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   approvedBy?: boolean | Prisma.Payment$approvedByArgs<ExtArgs>
+  confirmedByDriver?: boolean | Prisma.Payment$confirmedByDriverArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
 export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -779,10 +1046,14 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   proofUrl?: boolean
   approvedAt?: boolean
   approvedById?: boolean
+  confirmedByDriverId?: boolean
+  confirmedByDriverAt?: boolean
+  rejectedReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   approvedBy?: boolean | Prisma.Payment$approvedByArgs<ExtArgs>
+  confirmedByDriver?: boolean | Prisma.Payment$confirmedByDriverArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
 export type PaymentSelectScalar = {
@@ -794,22 +1065,28 @@ export type PaymentSelectScalar = {
   proofUrl?: boolean
   approvedAt?: boolean
   approvedById?: boolean
+  confirmedByDriverId?: boolean
+  confirmedByDriverAt?: boolean
+  rejectedReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bookingId" | "method" | "status" | "amountPen" | "proofUrl" | "approvedAt" | "approvedById" | "createdAt" | "updatedAt", ExtArgs["result"]["payment"]>
+export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bookingId" | "method" | "status" | "amountPen" | "proofUrl" | "approvedAt" | "approvedById" | "confirmedByDriverId" | "confirmedByDriverAt" | "rejectedReason" | "createdAt" | "updatedAt", ExtArgs["result"]["payment"]>
 export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   approvedBy?: boolean | Prisma.Payment$approvedByArgs<ExtArgs>
+  confirmedByDriver?: boolean | Prisma.Payment$confirmedByDriverArgs<ExtArgs>
 }
 export type PaymentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   approvedBy?: boolean | Prisma.Payment$approvedByArgs<ExtArgs>
+  confirmedByDriver?: boolean | Prisma.Payment$confirmedByDriverArgs<ExtArgs>
 }
 export type PaymentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   approvedBy?: boolean | Prisma.Payment$approvedByArgs<ExtArgs>
+  confirmedByDriver?: boolean | Prisma.Payment$confirmedByDriverArgs<ExtArgs>
 }
 
 export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -817,6 +1094,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     booking: Prisma.$BookingPayload<ExtArgs>
     approvedBy: Prisma.$UserPayload<ExtArgs> | null
+    confirmedByDriver: Prisma.$DriverProfilePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -827,6 +1105,9 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     proofUrl: string | null
     approvedAt: Date | null
     approvedById: string | null
+    confirmedByDriverId: string | null
+    confirmedByDriverAt: Date | null
+    rejectedReason: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["payment"]>
@@ -1225,6 +1506,7 @@ export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   booking<T extends Prisma.BookingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingDefaultArgs<ExtArgs>>): Prisma.Prisma__BookingClient<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   approvedBy<T extends Prisma.Payment$approvedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$approvedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  confirmedByDriver<T extends Prisma.Payment$confirmedByDriverArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$confirmedByDriverArgs<ExtArgs>>): Prisma.Prisma__DriverProfileClient<runtime.Types.Result.GetResult<Prisma.$DriverProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1262,6 +1544,9 @@ export interface PaymentFieldRefs {
   readonly proofUrl: Prisma.FieldRef<"Payment", 'String'>
   readonly approvedAt: Prisma.FieldRef<"Payment", 'DateTime'>
   readonly approvedById: Prisma.FieldRef<"Payment", 'String'>
+  readonly confirmedByDriverId: Prisma.FieldRef<"Payment", 'String'>
+  readonly confirmedByDriverAt: Prisma.FieldRef<"Payment", 'DateTime'>
+  readonly rejectedReason: Prisma.FieldRef<"Payment", 'String'>
   readonly createdAt: Prisma.FieldRef<"Payment", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Payment", 'DateTime'>
 }
@@ -1681,6 +1966,25 @@ export type Payment$approvedByArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Payment.confirmedByDriver
+ */
+export type Payment$confirmedByDriverArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DriverProfile
+   */
+  select?: Prisma.DriverProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DriverProfile
+   */
+  omit?: Prisma.DriverProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DriverProfileInclude<ExtArgs> | null
+  where?: Prisma.DriverProfileWhereInput
 }
 
 /**
