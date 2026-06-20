@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import {
   approvePaymentAction,
+  enterOwnDriverQueueAction,
   joinOwnDriverQueueAction,
   rejectPaymentAction,
   updateDriverBookingStatusAction,
@@ -241,6 +242,8 @@ function QueueStatusCard({
 }: {
   queueEntry: DriverDashboard["queueEntries"][number];
 }) {
+  const canPublish = queueEntry.position === 1;
+
   return (
     <AppCard className="space-y-3">
       <div className="flex items-start justify-between gap-3">
@@ -260,14 +263,18 @@ function QueueStatusCard({
         </span>
       </div>
       <p className="rounded-[12px] bg-[#F5F7FA] p-3 text-xs font-semibold text-slate-500">
-        Ya no necesitas que admin publique por ti. Al confirmar tu rampa, el
-        turno aparecerá para pasajeros.
+        {canPublish
+          ? "Estás primero en la rampa. Publica tu turno para que aparezca a los pasajeros."
+          : "Ya estás en la rampa. Espera a que salgan los conductores que están delante."}
       </p>
       <form action={joinOwnDriverQueueAction}>
         <input type="hidden" name="routeId" value={queueEntry.routeId} />
         <input type="hidden" name="direction" value={queueEntry.direction} />
-        <Button className="h-12 w-full rounded-[14px] bg-[#1E5BFF] font-black hover:bg-[#174de0]">
-          Publicar mi turno
+        <Button
+          disabled={!canPublish}
+          className="h-12 w-full rounded-[14px] bg-[#1E5BFF] font-black hover:bg-[#174de0]"
+        >
+          {canPublish ? "Publicar mi turno" : "Esperando mi turno"}
         </Button>
       </form>
     </AppCard>
@@ -310,7 +317,7 @@ function JoinQueueCard({
             const isPreferred = direction === preferredDirection;
 
             return (
-              <form key={direction} action={joinOwnDriverQueueAction}>
+              <form key={direction} action={enterOwnDriverQueueAction}>
                 <input type="hidden" name="routeId" value={route.id} />
                 <input type="hidden" name="direction" value={direction} />
                 <Button

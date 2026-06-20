@@ -116,6 +116,11 @@ export const joinDriverQueueSchema = z.object({
   driverId: z.string().min(1),
 });
 
+export const enterOwnDriverQueueSchema = z.object({
+  routeId: z.string().min(1),
+  direction: directionSchema,
+});
+
 export const joinOwnDriverQueueSchema = z.object({
   routeId: z.string().min(1),
   direction: directionSchema,

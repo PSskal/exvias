@@ -6,6 +6,7 @@ import {
   assignDriverToTrip,
   approvePayment,
   createTripTurn,
+  enterOwnDriverQueue,
   joinDriverQueue,
   joinOwnDriverQueue,
   publishNextRampTurn,
@@ -29,6 +30,7 @@ import {
   createTurnSchema,
   driverBookingStatusSchema,
   driverTripStatusSchema,
+  enterOwnDriverQueueSchema,
   joinDriverQueueSchema,
   joinOwnDriverQueueSchema,
   paymentProofSchema,
@@ -336,6 +338,27 @@ export async function joinDriverQueueAction(formData: FormData) {
 
   await joinDriverQueue(input);
   revalidatePath("/admin");
+}
+
+export async function enterOwnDriverQueueAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = enterOwnDriverQueueSchema.parse({
+    routeId: value(formData, "routeId"),
+    direction: value(formData, "direction"),
+  });
+
+  await enterOwnDriverQueue({
+    ...input,
+    userId: user.id,
+  });
+
+  revalidatePath("/driver");
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
 }
 
 export async function joinOwnDriverQueueAction(formData: FormData) {

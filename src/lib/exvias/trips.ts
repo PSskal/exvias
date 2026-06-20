@@ -147,15 +147,30 @@ async function joinDriverQueueInTransaction(
     return existingWaitingEntry;
   }
 
-  await tx.driverQueue.updateMany({
+  const previousWaitingEntries = await tx.driverQueue.findMany({
     where: {
       driverId: input.driverId,
       status: QueueStatus.WAITING,
     },
-    data: {
-      status: QueueStatus.OFFLINE,
+    select: {
+      routeId: true,
+      direction: true,
     },
   });
+
+  await tx.driverQueue.deleteMany({
+    where: {
+      driverId: input.driverId,
+      status: QueueStatus.WAITING,
+    },
+  });
+
+  for (const entry of previousWaitingEntries) {
+    await reindexWaitingQueue(tx, {
+      routeId: entry.routeId,
+      direction: entry.direction,
+    });
+  }
 
   const lastEntry = await tx.driverQueue.findFirst({
     where: {
@@ -213,6 +228,32 @@ async function publishDriverTurnInTransaction(
     throw new Error("Este conductor ya tiene un turno activo o publicado");
   }
 
+  const waitingEntry = await tx.driverQueue.findFirst({
+    where: {
+      routeId: input.routeId,
+      direction: input.direction,
+      driverId: input.driverId,
+      status: QueueStatus.WAITING,
+    },
+  });
+
+  if (!waitingEntry) {
+    throw new Error("Primero entra a la rampa para publicar tu turno");
+  }
+
+  const firstWaitingEntry = await tx.driverQueue.findFirst({
+    where: {
+      routeId: input.routeId,
+      direction: input.direction,
+      status: QueueStatus.WAITING,
+    },
+    orderBy: [{ position: "asc" }, { joinedAt: "asc" }],
+  });
+
+  if (firstWaitingEntry?.id !== waitingEntry.id) {
+    throw new Error("Aún tienes conductores delante en la rampa");
+  }
+
   await tx.driverQueue.deleteMany({
     where: {
       driverId: input.driverId,
@@ -241,6 +282,10 @@ async function publishDriverTurnInTransaction(
   });
 
   await normalizePublishedTripsForDirection(tx, {
+    routeId: input.routeId,
+    direction: input.direction,
+  });
+  await reindexWaitingQueue(tx, {
     routeId: input.routeId,
     direction: input.direction,
   });
@@ -1152,6 +1197,35 @@ export async function joinDriverQueue(input: {
   driverId: string;
 }) {
   return prisma.$transaction((tx) => joinDriverQueueInTransaction(tx, input));
+}
+
+export async function enterOwnDriverQueue(input: {
+  routeId: string;
+  direction: RouteDirection;
+  userId: string;
+}) {
+  return prisma.$transaction(async (tx) => {
+    const driver = await tx.driverProfile.findUnique({
+      where: { userId: input.userId },
+    });
+
+    if (!driver) throw new Error("Perfil de conductor no encontrado");
+
+    const route = await tx.route.findFirst({
+      where: {
+        id: input.routeId,
+        isActive: true,
+      },
+    });
+
+    if (!route) throw new Error("Ruta no disponible");
+
+    return joinDriverQueueInTransaction(tx, {
+      routeId: input.routeId,
+      direction: input.direction,
+      driverId: driver.id,
+    });
+  });
 }
 
 export async function joinOwnDriverQueue(input: {
