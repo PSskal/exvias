@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Send } from "lucide-react";
 import { RouteDirection } from "@/lib/generated/prisma/client";
 import { getRoutesOverview } from "@/lib/exvias/routes";
 import { getCurrentUser } from "@/lib/session";
@@ -42,13 +41,6 @@ export default async function Home() {
               Reserva tu salida en segundos.
             </p>
           </div>
-          <Link
-            href="/trips"
-            className="grid size-11 shrink-0 place-items-center rounded-full bg-[#1E5BFF] text-white shadow-[0_12px_28px_rgba(30,91,255,0.28)]"
-            aria-label="Viajar ahora"
-          >
-            <Send className="size-5" />
-          </Link>
         </section>
 
         {route ? (

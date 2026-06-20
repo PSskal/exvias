@@ -2,11 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   CalendarDays,
+  CarFront,
   ChevronLeft,
   Home,
   Menu,
   UserRound,
 } from "lucide-react";
+import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 export function PhoneShell({
@@ -100,10 +103,24 @@ export function BlueHeader({
   );
 }
 
-export function BottomNav({ active }: { active: "home" | "trips" | "my" | "account" }) {
+export async function BottomNav({
+  active,
+}: {
+  active: "home" | "trips" | "my" | "account";
+}) {
+  const user = await getCurrentUser();
+  const driverProfile = user
+    ? await prisma.driverProfile.findUnique({
+        where: { userId: user.id },
+        select: { id: true },
+      })
+    : null;
+  const middleItem = driverProfile
+    ? { id: "my", label: "Panel", href: "/driver", icon: CarFront }
+    : { id: "my", label: "Mis viajes", href: "/my-trips", icon: CalendarDays };
   const items = [
     { id: "home", label: "Inicio", href: "/", icon: Home },
-    { id: "my", label: "Mis viajes", href: "/my-trips", icon: CalendarDays },
+    middleItem,
     { id: "account", label: "Mi cuenta", href: "/account", icon: UserRound },
   ] as const;
 

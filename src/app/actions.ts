@@ -7,6 +7,7 @@ import {
   approvePayment,
   createTripTurn,
   joinDriverQueue,
+  joinOwnDriverQueue,
   publishNextRampTurn,
   rejectPayment,
   reserveSeatWithPaymentProof,
@@ -17,6 +18,7 @@ import {
   updateDriverTripStatus,
   updateDriverVehicle,
   updateManualSeats,
+  updateOwnDriverSettings,
   updateTripStatus,
   upsertDriverProfile,
 } from "@/lib/exvias/trips";
@@ -28,6 +30,7 @@ import {
   driverBookingStatusSchema,
   driverTripStatusSchema,
   joinDriverQueueSchema,
+  joinOwnDriverQueueSchema,
   paymentProofSchema,
   publishNextRampTurnSchema,
   rejectPaymentSchema,
@@ -36,6 +39,7 @@ import {
   upsertDriverProfileSchema,
   updateDriverVehicleSchema,
   updateManualSeatsSchema,
+  updateOwnDriverSettingsSchema,
   updateTripStatusSchema,
 } from "@/lib/exvias/validation";
 import prisma from "@/lib/prisma";
@@ -250,6 +254,33 @@ export async function updateDriverVehicleAction(formData: FormData) {
   revalidatePath("/trips");
 }
 
+export async function updateOwnDriverSettingsAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/account/settings");
+  }
+
+  const input = updateOwnDriverSettingsSchema.parse({
+    phone: value(formData, "phone") || undefined,
+    yapePhone: value(formData, "yapePhone"),
+    yapeName: value(formData, "yapeName"),
+    licensePlate: value(formData, "licensePlate"),
+    vehicleName: value(formData, "vehicleName"),
+  });
+
+  await updateOwnDriverSettings({
+    ...input,
+    userId: user.id,
+  });
+
+  revalidatePath("/account");
+  revalidatePath("/account/settings");
+  revalidatePath("/driver");
+  revalidatePath("/admin");
+  revalidatePath("/trips");
+  redirect("/driver?settings=saved");
+}
+
 export async function updateManualSeatsAction(formData: FormData) {
   const user = await getCurrentUser();
   if (!user) {
@@ -305,6 +336,27 @@ export async function joinDriverQueueAction(formData: FormData) {
 
   await joinDriverQueue(input);
   revalidatePath("/admin");
+}
+
+export async function joinOwnDriverQueueAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = joinOwnDriverQueueSchema.parse({
+    routeId: value(formData, "routeId"),
+    direction: value(formData, "direction"),
+  });
+
+  await joinOwnDriverQueue({
+    ...input,
+    userId: user.id,
+  });
+
+  revalidatePath("/driver");
+  revalidatePath("/admin");
+  revalidatePath("/admin/schedule");
 }
 
 export async function assignDriverToTripAction(formData: FormData) {

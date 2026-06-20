@@ -116,6 +116,11 @@ export const joinDriverQueueSchema = z.object({
   driverId: z.string().min(1),
 });
 
+export const joinOwnDriverQueueSchema = z.object({
+  routeId: z.string().min(1),
+  direction: directionSchema,
+});
+
 export const assignDriverToTripSchema = z.object({
   tripId: z.string().min(1),
   driverId: z.string().min(1),
@@ -161,6 +166,14 @@ export const upsertDriverProfileSchema = z.object({
 });
 
 export const updateDriverVehicleSchema = z.object({
+  vehicleName: z.enum(vehicleIds),
+});
+
+export const updateOwnDriverSettingsSchema = z.object({
+  phone: z.string().trim().optional(),
+  yapePhone: z.string().trim().min(6, "Ingresa el número Yape"),
+  yapeName: z.string().trim().min(2, "Ingresa el titular del Yape"),
+  licensePlate: z.string().trim().min(2, "Ingresa la placa"),
   vehicleName: z.enum(vehicleIds),
 });
 

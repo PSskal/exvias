@@ -6,9 +6,12 @@ import {
   CarFront,
   LogIn,
   Mail,
+  Settings,
   ShieldCheck,
   UserPlus,
 } from "lucide-react";
+import { UserRole } from "@/lib/generated/prisma/client";
+import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import {
   AppCard,
@@ -30,13 +33,33 @@ const roleLabels = {
 
 export default async function AccountPage() {
   const user = await getCurrentUser();
+  const dbUser = user
+    ? await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { driverProfile: true },
+      })
+    : null;
+  const effectiveRole =
+    dbUser?.role === UserRole.ADMIN
+      ? UserRole.ADMIN
+      : dbUser?.driverProfile
+        ? UserRole.DRIVER
+        : (dbUser?.role ?? UserRole.PASSENGER);
+  const accountUser = user
+    ? {
+        name: dbUser?.name ?? user.name,
+        email: dbUser?.email ?? user.email,
+        role: effectiveRole,
+        hasDriverProfile: Boolean(dbUser?.driverProfile),
+      }
+    : null;
 
   return (
     <PhoneShell>
       <StatusBar />
       <BlueHeader title="Mi cuenta" subtitle="Perfil EXVIASS" />
       <ContentArea withBottomNav className="space-y-4">
-        {user ? <SignedInAccount user={user} /> : <GuestAccount />}
+        {accountUser ? <SignedInAccount user={accountUser} /> : <GuestAccount />}
       </ContentArea>
       <BottomNav active="account" />
     </PhoneShell>
@@ -49,7 +72,8 @@ function SignedInAccount({
   user: {
     name?: string | null;
     email: string;
-    role?: keyof typeof roleLabels;
+    role: keyof typeof roleLabels;
+    hasDriverProfile: boolean;
   };
 }) {
   return (
@@ -79,7 +103,7 @@ function SignedInAccount({
             {user.email}
           </AccountFact>
           <AccountFact icon={<ShieldCheck className="size-4" />} label="Tipo de cuenta">
-            {roleLabels[user.role ?? "PASSENGER"]}
+            {roleLabels[user.role]}
           </AccountFact>
         </div>
       </AppCard>
@@ -94,7 +118,13 @@ function SignedInAccount({
           title="Mis viajes"
           description="Revisa tus reservas y estados de pago"
         />
-        {(user.role === "DRIVER" || user.role === "ADMIN") && (
+        <AccountLink
+          href="/account/settings"
+          icon={<Settings className="size-5" />}
+          title="Configuración"
+          description="Actualiza tus datos de cuenta y conductor"
+        />
+        {(user.hasDriverProfile || user.role === "ADMIN") && (
           <AccountLink
             href="/driver"
             icon={<CarFront className="size-5" />}

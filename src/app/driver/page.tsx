@@ -16,15 +16,16 @@ import {
 } from "lucide-react";
 import {
   approvePaymentAction,
+  joinOwnDriverQueueAction,
   rejectPaymentAction,
   updateDriverBookingStatusAction,
   updateDriverTripStatusAction,
-  updateDriverVehicleAction,
   updateManualSeatsAction,
 } from "@/app/actions";
 import {
   BookingStatus,
   PaymentStatus,
+  RouteDirection,
   TripStatus,
 } from "@/lib/generated/prisma/client";
 import {
@@ -32,17 +33,18 @@ import {
   formatTime,
   getVehicleOption,
   routeDirectionLabels,
-  vehicleCatalog,
 } from "@/lib/exvias/constants";
 import { getDriverDashboard } from "@/lib/exvias/trips";
 import { getCurrentUser } from "@/lib/session";
 import {
   AppCard,
   BlueHeader,
+  BottomNav,
   ContentArea,
   PhoneShell,
   StatusBar,
 } from "@/components/exvias/mobile-shell";
+import { PageToast } from "@/components/exvias/page-toast";
 import { StatusBadge } from "@/components/exvias/status-badge";
 import { Button } from "@/components/ui/button";
 
@@ -52,7 +54,47 @@ type DriverDashboard = NonNullable<Awaited<ReturnType<typeof getDriverDashboard>
 type DriverTrip = DriverDashboard["trips"][number];
 type DriverBooking = DriverTrip["bookings"][number];
 
-export default async function DriverPage() {
+function oppositeDirection(direction: RouteDirection) {
+  return direction === RouteDirection.CUSCO_TO_COLQUEPATA
+    ? RouteDirection.COLQUEPATA_TO_CUSCO
+    : RouteDirection.CUSCO_TO_COLQUEPATA;
+}
+
+function DriverInfoRow({
+  icon,
+  label,
+  primary,
+  secondary,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  primary: string;
+  secondary: string;
+}) {
+  return (
+    <div className="flex items-center gap-2.5 rounded-[14px] bg-[#F5F7FA] p-2.5">
+      <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#1E5BFF]/10 text-[#073FEA]">
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-black uppercase tracking-wide text-slate-400">
+          {label}
+        </p>
+        <p className="truncate text-xs font-black text-slate-950">{primary}</p>
+        <p className="truncate text-xs font-semibold text-slate-500">
+          {secondary}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default async function DriverPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ settings?: string }>;
+}) {
+  const params = await searchParams;
   const user = await getCurrentUser();
   if (!user) redirect("/login?callbackURL=/driver");
 
@@ -82,6 +124,7 @@ export default async function DriverPage() {
   }
 
   const { driver, trips } = dashboard;
+  const waitingQueue = dashboard.queueEntries[0];
   const currentTrip =
     trips.find((trip) => trip.status !== TripStatus.QUEUED) ?? trips[0];
   const nextTrips = currentTrip
@@ -92,81 +135,70 @@ export default async function DriverPage() {
   return (
     <PhoneShell>
       <StatusBar />
+      <PageToast type={params.settings === "saved" ? "settingsSaved" : null} />
       <BlueHeader title="Conductor" subtitle="Operación del día" href="/account" />
-      <ContentArea className="space-y-4">
-        <AppCard className="overflow-hidden bg-[#073FEA] text-white">
-          <p className="text-xs font-black uppercase tracking-wide text-white/70">
-            Mi Yape de cobro
-          </p>
-          <h1 className="mt-1 text-2xl font-black">{driver.user.name}</h1>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <div className="rounded-[14px] bg-white/12 p-3">
-              <p className="text-[11px] font-bold text-white/65">Titular</p>
-              <p className="mt-1 truncate text-sm font-black">
-                {driver.yapeName ?? "Pendiente"}
-              </p>
+      <ContentArea withBottomNav className="space-y-4">
+        <AppCard className="overflow-hidden bg-white p-0">
+          <div className="relative bg-[#073FEA] px-4 pb-12 pt-4 text-white">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-black uppercase tracking-wide text-white/70">
+                  Conductor activo
+                </p>
+                <h1 className="mt-0.5 truncate text-xl font-black">
+                  {driver.user.name}
+                </h1>
+                <p className="mt-0.5 truncate text-xs font-bold text-white/70">
+                  {selectedVehicle.shortName} · Placa{" "}
+                  {driver.licensePlate ?? "pendiente"}
+                </p>
+              </div>
+              <span className="rounded-full bg-white/14 px-2.5 py-1 text-[11px] font-black text-white ring-1 ring-white/20">
+                En línea
+              </span>
             </div>
-            <div className="rounded-[14px] bg-white/12 p-3">
-              <p className="text-[11px] font-bold text-white/65">Número</p>
-              <p className="mt-1 text-sm font-black">
-                {driver.yapePhone ?? "Pendiente"}
-              </p>
+            <div className="absolute -bottom-6 right-1 h-20 w-36">
+              <Image
+                src={selectedVehicle.image}
+                alt={selectedVehicle.name}
+                fill
+                sizes="144px"
+                className="object-contain drop-shadow-[0_18px_24px_rgba(2,6,23,0.22)]"
+                priority
+              />
             </div>
           </div>
-        </AppCard>
 
-        <AppCard className="space-y-3 overflow-hidden">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-black uppercase tracking-wide text-[#1E5BFF]">
-                Mi vehículo
-              </p>
-              <h2 className="mt-1 text-lg font-black">{selectedVehicle.name}</h2>
-              <p className="mt-1 text-xs font-semibold text-slate-500">
-                Placa {driver.licensePlate ?? "pendiente"}
-              </p>
-            </div>
-            <span className="rounded-full bg-[#2ECC71]/12 px-3 py-1 text-xs font-black text-[#1c7c44]">
-              Activo
-            </span>
-          </div>
-
-          <div className="relative h-32 rounded-[16px] bg-gradient-to-b from-slate-100 to-white">
-            <Image
-              src={selectedVehicle.image}
-              alt={selectedVehicle.name}
-              fill
-              sizes="420px"
-              className="object-contain p-2"
-              priority
+          <div className="grid grid-cols-2 gap-2 px-3 pb-3 pt-8">
+            <DriverInfoRow
+              icon={<CreditCard className="size-4" />}
+              label="Yape de cobro"
+              primary={driver.yapePhone ?? "Pendiente"}
+              secondary={driver.yapeName ?? "Titular pendiente"}
+            />
+            <DriverInfoRow
+              icon={<Phone className="size-4" />}
+              label="Llamadas"
+              primary={driver.phone ?? driver.yapePhone ?? "Pendiente"}
+              secondary="Contacto visible para pasajeros"
             />
           </div>
-
-          <form action={updateDriverVehicleAction} className="grid gap-2">
-            <select
-              name="vehicleName"
-              defaultValue={selectedVehicle.id}
-              className="h-11 rounded-[12px] border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700"
-            >
-              {vehicleCatalog.map((vehicle) => (
-                <option key={vehicle.id} value={vehicle.id}>
-                  {vehicle.name}
-                </option>
-              ))}
-            </select>
-            <Button className="h-11 rounded-[12px] bg-[#1E5BFF] font-black hover:bg-[#174de0]">
-              Guardar vehículo
-            </Button>
-          </form>
         </AppCard>
 
         {!currentTrip ? (
-          <AppCard className="text-center">
-            <p className="font-black">Sin turnos asignados</p>
-            <p className="mt-2 text-sm font-semibold text-slate-500">
-              Cuando admin te publique desde la rampa aparecerá aquí.
-            </p>
-          </AppCard>
+          waitingQueue ? (
+            <QueueStatusCard queueEntry={waitingQueue} />
+          ) : (
+            <JoinQueueCard
+              routes={dashboard.routes}
+              driverActive={driver.isActive}
+              preferredDirection={
+                dashboard.lastClosedTrip
+                  ? oppositeDirection(dashboard.lastClosedTrip.direction)
+                  : undefined
+              }
+            />
+          )
         ) : (
           <>
             <CurrentTripCard trip={currentTrip} />
@@ -199,7 +231,112 @@ export default async function DriverPage() {
           </section>
         ) : null}
       </ContentArea>
+      <BottomNav active="my" />
     </PhoneShell>
+  );
+}
+
+function QueueStatusCard({
+  queueEntry,
+}: {
+  queueEntry: DriverDashboard["queueEntries"][number];
+}) {
+  return (
+    <AppCard className="space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-black uppercase tracking-wide text-[#1E5BFF]">
+            Estoy en rampa
+          </p>
+          <h2 className="mt-1 text-lg font-black">
+            {routeDirectionLabels[queueEntry.direction]}
+          </h2>
+          <p className="mt-1 text-sm font-semibold text-slate-500">
+            Publica tu turno cuando estés listo para recibir pasajeros.
+          </p>
+        </div>
+        <span className="grid size-11 place-items-center rounded-full bg-[#F4B400]/15 text-sm font-black text-[#8a6500]">
+          #{queueEntry.position}
+        </span>
+      </div>
+      <p className="rounded-[12px] bg-[#F5F7FA] p-3 text-xs font-semibold text-slate-500">
+        Ya no necesitas que admin publique por ti. Al confirmar tu rampa, el
+        turno aparecerá para pasajeros.
+      </p>
+      <form action={joinOwnDriverQueueAction}>
+        <input type="hidden" name="routeId" value={queueEntry.routeId} />
+        <input type="hidden" name="direction" value={queueEntry.direction} />
+        <Button className="h-12 w-full rounded-[14px] bg-[#1E5BFF] font-black hover:bg-[#174de0]">
+          Publicar mi turno
+        </Button>
+      </form>
+    </AppCard>
+  );
+}
+
+function JoinQueueCard({
+  routes,
+  driverActive,
+  preferredDirection,
+}: {
+  routes: DriverDashboard["routes"];
+  driverActive: boolean;
+  preferredDirection?: RouteDirection;
+}) {
+  const route = routes[0];
+  const directions = Object.values(RouteDirection).sort((direction) =>
+    direction === preferredDirection ? -1 : 1,
+  );
+
+  return (
+    <AppCard className="space-y-3">
+      <div>
+        <p className="text-xs font-black uppercase tracking-wide text-[#1E5BFF]">
+          Sin turno ni rampa
+        </p>
+        <h2 className="mt-1 text-lg font-black">Entrar a rampa</h2>
+        <p className="mt-1 text-sm font-semibold text-slate-500">
+          Elige la rampa donde estás físicamente. El regreso se muestra primero.
+        </p>
+      </div>
+
+      {!driverActive ? (
+        <p className="rounded-[12px] bg-[#E53935]/10 p-3 text-sm font-bold text-[#E53935]">
+          Tu perfil no está habilitado. Pide al admin que lo active.
+        </p>
+      ) : route ? (
+        <div className="grid gap-2">
+          {directions.map((direction) => {
+            const isPreferred = direction === preferredDirection;
+
+            return (
+              <form key={direction} action={joinOwnDriverQueueAction}>
+                <input type="hidden" name="routeId" value={route.id} />
+                <input type="hidden" name="direction" value={direction} />
+                <Button
+                  className={
+                    isPreferred
+                      ? "h-14 w-full flex-col rounded-[14px] bg-[#2ECC71] font-black text-white hover:bg-[#29b866]"
+                      : "h-14 w-full flex-col rounded-[14px] bg-[#1E5BFF]/10 font-black text-[#1E5BFF] hover:bg-[#1E5BFF]/15"
+                  }
+                >
+                  <span>
+                    {isPreferred ? "Entrar a rampa de regreso" : "Entrar a esta rampa"}
+                  </span>
+                  <span className="text-[11px] font-bold opacity-80">
+                    {routeDirectionLabels[direction]}
+                  </span>
+                </Button>
+              </form>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="rounded-[12px] bg-[#F5F7FA] p-3 text-sm font-semibold text-slate-500">
+          No hay ruta activa para entrar a cola.
+        </p>
+      )}
+    </AppCard>
   );
 }
 

@@ -56,53 +56,196 @@ function nextDeparture(index: number) {
   return date;
 }
 
-function oppositeDirection(direction: RouteDirection) {
-  return direction === RouteDirection.CUSCO_TO_COLQUEPATA
-    ? RouteDirection.COLQUEPATA_TO_CUSCO
-    : RouteDirection.CUSCO_TO_COLQUEPATA;
-}
-
 function occupiedSeats(input: { bookedSeats: number; manualSeats: number }) {
   return input.bookedSeats + input.manualSeats;
 }
 
-async function moveDriverToDestinationRamp(
+async function reindexWaitingQueue(
   tx: Tx,
   input: {
     routeId: string;
     direction: RouteDirection;
+  },
+) {
+  const entries = await tx.driverQueue.findMany({
+    where: {
+      routeId: input.routeId,
+      direction: input.direction,
+      status: QueueStatus.WAITING,
+    },
+    orderBy: [{ position: "asc" }, { joinedAt: "asc" }],
+  });
+
+  for (const [index, entry] of entries.entries()) {
+    await tx.driverQueue.update({
+      where: { id: entry.id },
+      data: { position: 10_000 + index },
+    });
+  }
+
+  for (const [index, entry] of entries.entries()) {
+    await tx.driverQueue.update({
+      where: { id: entry.id },
+      data: { position: index + 1 },
+    });
+  }
+}
+
+async function clearDriverQueueState(
+  tx: Tx,
+  input: {
     driverId: string | null;
   },
 ) {
   if (!input.driverId) return;
 
-  const destinationDirection = oppositeDirection(input.direction);
-
   await tx.driverQueue.deleteMany({
     where: {
       driverId: input.driverId,
+      status: { in: [QueueStatus.ASSIGNED, QueueStatus.WAITING] },
+    },
+  });
+}
+
+async function joinDriverQueueInTransaction(
+  tx: Tx,
+  input: {
+    routeId: string;
+    direction: RouteDirection;
+    driverId: string;
+  },
+) {
+  const driver = await tx.driverProfile.findUnique({
+    where: { id: input.driverId },
+  });
+
+  if (!driver?.isActive) {
+    throw new Error("Conductor no disponible");
+  }
+
+  const activeTrip = await tx.trip.findFirst({
+    where: {
+      driverId: input.driverId,
+      status: { in: driverUnavailableTripStatuses },
+    },
+  });
+
+  if (activeTrip) {
+    throw new Error("Este conductor ya tiene un turno activo o publicado");
+  }
+
+  const existingWaitingEntry = await tx.driverQueue.findFirst({
+    where: {
+      routeId: input.routeId,
+      direction: input.direction,
+      driverId: input.driverId,
       status: QueueStatus.WAITING,
+    },
+  });
+
+  if (existingWaitingEntry) {
+    return existingWaitingEntry;
+  }
+
+  await tx.driverQueue.updateMany({
+    where: {
+      driverId: input.driverId,
+      status: QueueStatus.WAITING,
+    },
+    data: {
+      status: QueueStatus.OFFLINE,
     },
   });
 
   const lastEntry = await tx.driverQueue.findFirst({
     where: {
       routeId: input.routeId,
-      direction: destinationDirection,
+      direction: input.direction,
       status: QueueStatus.WAITING,
     },
     orderBy: { position: "desc" },
   });
 
-  await tx.driverQueue.create({
+  return tx.driverQueue.create({
     data: {
       routeId: input.routeId,
-      direction: destinationDirection,
+      direction: input.direction,
       driverId: input.driverId,
       position: (lastEntry?.position ?? 0) + 1,
       status: QueueStatus.WAITING,
     },
   });
+}
+
+async function publishDriverTurnInTransaction(
+  tx: Tx,
+  input: {
+    routeId: string;
+    direction: RouteDirection;
+    driverId: string;
+  },
+) {
+  const driver = await tx.driverProfile.findUnique({
+    where: { id: input.driverId },
+  });
+
+  if (!driver?.isActive) {
+    throw new Error("Conductor no disponible");
+  }
+
+  const route = await tx.route.findFirst({
+    where: {
+      id: input.routeId,
+      isActive: true,
+    },
+  });
+
+  if (!route) throw new Error("Ruta no disponible");
+
+  const unavailableTrip = await tx.trip.findFirst({
+    where: {
+      driverId: input.driverId,
+      status: { in: driverUnavailableTripStatuses },
+    },
+  });
+
+  if (unavailableTrip) {
+    throw new Error("Este conductor ya tiene un turno activo o publicado");
+  }
+
+  await tx.driverQueue.deleteMany({
+    where: {
+      driverId: input.driverId,
+      status: { in: [QueueStatus.WAITING, QueueStatus.ASSIGNED] },
+    },
+  });
+
+  const publishedCount = await tx.trip.count({
+    where: {
+      routeId: input.routeId,
+      direction: input.direction,
+      driverId: { not: null },
+      status: { in: activeTripStatuses },
+    },
+  });
+
+  const trip = await tx.trip.create({
+    data: {
+      routeId: input.routeId,
+      direction: input.direction,
+      driverId: input.driverId,
+      turnLabel: nextTurnLabel(publishedCount),
+      plannedDepartureAt: nextDeparture(publishedCount),
+      status: publishedCount === 0 ? TripStatus.ACTIVE : TripStatus.QUEUED,
+    },
+  });
+
+  await normalizePublishedTripsForDirection(tx, {
+    routeId: input.routeId,
+    direction: input.direction,
+  });
+
+  return trip;
 }
 
 async function normalizePublishedTripsForDirection(
@@ -733,26 +876,50 @@ export async function getDriverDashboard(userId?: string) {
 
   if (!driver) return null;
 
-  const trips = await prisma.trip.findMany({
-    where: {
-      driverId: driver.id,
-      status: { in: driverVisibleTripStatuses },
-    },
-    include: {
-      route: true,
-      bookings: {
-        where: { status: { not: BookingStatus.CANCELLED } },
-        include: {
-          boardingPoint: true,
-          payment: true,
-        },
-        orderBy: { seatNumber: "asc" },
+  const [trips, lastClosedTrip] = await Promise.all([
+    prisma.trip.findMany({
+      where: {
+        driverId: driver.id,
+        status: { in: driverVisibleTripStatuses },
       },
-    },
-    orderBy: [{ plannedDepartureAt: "asc" }, { createdAt: "asc" }],
-  });
+      include: {
+        route: true,
+        bookings: {
+          where: { status: { not: BookingStatus.CANCELLED } },
+          include: {
+            boardingPoint: true,
+            payment: true,
+          },
+          orderBy: { seatNumber: "asc" },
+        },
+      },
+      orderBy: [{ plannedDepartureAt: "asc" }, { createdAt: "asc" }],
+    }),
+    prisma.trip.findFirst({
+      where: {
+        driverId: driver.id,
+        status: { in: closedTripStatuses },
+      },
+      orderBy: [{ completedAt: "desc" }, { departedAt: "desc" }, { createdAt: "desc" }],
+    }),
+  ]);
 
-  return { driver, trips };
+  const [queueEntries, routes] = await Promise.all([
+    prisma.driverQueue.findMany({
+      where: {
+        driverId: driver.id,
+        status: QueueStatus.WAITING,
+      },
+      include: { route: true },
+      orderBy: [{ joinedAt: "desc" }],
+    }),
+    prisma.route.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
+
+  return { driver, trips, queueEntries, routes, lastClosedTrip };
 }
 
 export async function updateDriverTripStatus(input: {
@@ -804,9 +971,7 @@ export async function updateDriverTripStatus(input: {
     }
 
     if (updatedTrip.status === TripStatus.COMPLETED) {
-      await moveDriverToDestinationRamp(tx, {
-        routeId: updatedTrip.routeId,
-        direction: updatedTrip.direction,
+      await clearDriverQueueState(tx, {
         driverId: updatedTrip.driverId,
       });
     }
@@ -867,6 +1032,33 @@ export async function updateDriverVehicle(input: {
   return prisma.driverProfile.update({
     where: { id: driver.id },
     data: { vehicleName: input.vehicleName },
+  });
+}
+
+export async function updateOwnDriverSettings(input: {
+  userId: string;
+  phone?: string;
+  yapePhone: string;
+  yapeName: string;
+  licensePlate: string;
+  vehicleName: string;
+}) {
+  const driver = await prisma.driverProfile.findUnique({
+    where: { userId: input.userId },
+    select: { id: true },
+  });
+
+  if (!driver) throw new Error("Perfil de conductor no encontrado");
+
+  return prisma.driverProfile.update({
+    where: { id: driver.id },
+    data: {
+      phone: input.phone || null,
+      yapePhone: input.yapePhone,
+      yapeName: input.yapeName,
+      licensePlate: input.licensePlate,
+      vehicleName: input.vehicleName,
+    },
   });
 }
 
@@ -945,9 +1137,7 @@ export async function updateTripStatus(input: {
     }
 
     if (trip.status === TripStatus.COMPLETED) {
-      await moveDriverToDestinationRamp(tx, {
-        routeId: trip.routeId,
-        direction: trip.direction,
+      await clearDriverQueueState(tx, {
         driverId: trip.driverId,
       });
     }
@@ -961,68 +1151,35 @@ export async function joinDriverQueue(input: {
   direction: RouteDirection;
   driverId: string;
 }) {
+  return prisma.$transaction((tx) => joinDriverQueueInTransaction(tx, input));
+}
+
+export async function joinOwnDriverQueue(input: {
+  routeId: string;
+  direction: RouteDirection;
+  userId: string;
+}) {
   return prisma.$transaction(async (tx) => {
     const driver = await tx.driverProfile.findUnique({
-      where: { id: input.driverId },
+      where: { userId: input.userId },
     });
 
-    if (!driver?.isActive) {
-      throw new Error("Conductor no disponible");
-    }
+    if (!driver) throw new Error("Perfil de conductor no encontrado");
 
-    const activeTrip = await tx.trip.findFirst({
+    const route = await tx.route.findFirst({
       where: {
-        driverId: input.driverId,
-        status: { in: driverOperationalTripStatuses },
+        id: input.routeId,
+        isActive: true,
       },
     });
 
-    if (activeTrip) {
-      throw new Error("Este conductor ya tiene un viaje en operación");
-    }
+    if (!route) throw new Error("Ruta no disponible");
 
-    const existingWaitingEntry = await tx.driverQueue.findFirst({
-      where: {
-        routeId: input.routeId,
-        direction: input.direction,
-        driverId: input.driverId,
-        status: QueueStatus.WAITING,
-      },
+    return publishDriverTurnInTransaction(tx, {
+      routeId: input.routeId,
+      direction: input.direction,
+      driverId: driver.id,
     });
-
-    if (existingWaitingEntry) {
-      return existingWaitingEntry;
-    }
-
-    await tx.driverQueue.updateMany({
-      where: {
-        driverId: input.driverId,
-        status: QueueStatus.WAITING,
-      },
-      data: {
-        status: QueueStatus.OFFLINE,
-      },
-    });
-
-    const lastEntry = await tx.driverQueue.findFirst({
-      where: {
-        routeId: input.routeId,
-        direction: input.direction,
-        status: QueueStatus.WAITING,
-      },
-      orderBy: { position: "desc" },
-    });
-
-    const queueEntry = await tx.driverQueue.create({
-      data: {
-        routeId: input.routeId,
-        direction: input.direction,
-        driverId: input.driverId,
-        position: (lastEntry?.position ?? 0) + 1,
-      },
-    });
-
-    return queueEntry;
   });
 }
 
@@ -1157,21 +1314,10 @@ export async function publishNextRampTurn(input: {
       },
     });
 
-    const remainingEntries = await tx.driverQueue.findMany({
-      where: {
-        routeId: input.routeId,
-        direction: input.direction,
-        status: QueueStatus.WAITING,
-      },
-      orderBy: [{ position: "asc" }, { joinedAt: "asc" }],
+    await reindexWaitingQueue(tx, {
+      routeId: input.routeId,
+      direction: input.direction,
     });
-
-    for (const [index, entry] of remainingEntries.entries()) {
-      await tx.driverQueue.update({
-        where: { id: entry.id },
-        data: { position: index + 1 },
-      });
-    }
 
     await normalizePublishedTripsForDirection(tx, {
       routeId: input.routeId,
