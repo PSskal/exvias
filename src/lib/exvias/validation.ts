@@ -170,6 +170,31 @@ export const upsertDriverProfileSchema = z.object({
   vehicleName: z.enum(vehicleIds),
 });
 
+export const activateDriverProfileSchema = z.object({
+  userId: z.string().min(1),
+});
+
+export const updateDriverActiveStateSchema = z.object({
+  driverId: z.string().min(1),
+  isActive: z.enum(["true", "false"]).transform((value) => value === "true"),
+});
+
+export const suspendDriverAfterTripSchema = z.object({
+  driverId: z.string().min(1),
+  reason: z.string().trim().max(180).optional(),
+});
+
+export const cancelDriverCurrentTripSchema = z.object({
+  driverId: z.string().min(1),
+  reason: z.string().trim().max(180).optional(),
+});
+
+export const reassignDriverCurrentTripSchema = z.object({
+  driverId: z.string().min(1),
+  replacementDriverId: z.string().min(1),
+  reason: z.string().trim().max(180).optional(),
+});
+
 export const updateDriverVehicleSchema = z.object({
   vehicleName: z.enum(vehicleIds),
 });

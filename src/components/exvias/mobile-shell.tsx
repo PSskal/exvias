@@ -40,14 +40,14 @@ export function StatusBar() {
 
 export function BrandMark() {
   return (
-    <div className="relative h-14 w-40 overflow-hidden rounded-xl bg-white px-2 shadow-sm">
+    <div className="relative h-12 w-36 overflow-visible">
       <Image
-        src="/brand/exviass-logo.png"
+        src="/brand/exviass-logo-transparent.png"
         alt="EXVIASS S.A."
         fill
         priority
-        sizes="160px"
-        className="object-contain object-left"
+        sizes="144px"
+        className="object-contain"
       />
     </div>
   );

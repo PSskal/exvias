@@ -1423,6 +1423,8 @@ export const DriverProfileScalarFieldEnum = {
   vehicleName: 'vehicleName',
   capacity: 'capacity',
   isActive: 'isActive',
+  suspendAfterTrip: 'suspendAfterTrip',
+  suspensionReason: 'suspensionReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

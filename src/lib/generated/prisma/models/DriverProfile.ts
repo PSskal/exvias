@@ -44,6 +44,8 @@ export type DriverProfileMinAggregateOutputType = {
   vehicleName: string | null
   capacity: number | null
   isActive: boolean | null
+  suspendAfterTrip: boolean | null
+  suspensionReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +60,8 @@ export type DriverProfileMaxAggregateOutputType = {
   vehicleName: string | null
   capacity: number | null
   isActive: boolean | null
+  suspendAfterTrip: boolean | null
+  suspensionReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +76,8 @@ export type DriverProfileCountAggregateOutputType = {
   vehicleName: number
   capacity: number
   isActive: number
+  suspendAfterTrip: number
+  suspensionReason: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +102,8 @@ export type DriverProfileMinAggregateInputType = {
   vehicleName?: true
   capacity?: true
   isActive?: true
+  suspendAfterTrip?: true
+  suspensionReason?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +118,8 @@ export type DriverProfileMaxAggregateInputType = {
   vehicleName?: true
   capacity?: true
   isActive?: true
+  suspendAfterTrip?: true
+  suspensionReason?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +134,8 @@ export type DriverProfileCountAggregateInputType = {
   vehicleName?: true
   capacity?: true
   isActive?: true
+  suspendAfterTrip?: true
+  suspensionReason?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +237,8 @@ export type DriverProfileGroupByOutputType = {
   vehicleName: string | null
   capacity: number
   isActive: boolean
+  suspendAfterTrip: boolean
+  suspensionReason: string | null
   createdAt: Date
   updatedAt: Date
   _count: DriverProfileCountAggregateOutputType | null
@@ -262,6 +276,8 @@ export type DriverProfileWhereInput = {
   vehicleName?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   capacity?: Prisma.IntFilter<"DriverProfile"> | number
   isActive?: Prisma.BoolFilter<"DriverProfile"> | boolean
+  suspendAfterTrip?: Prisma.BoolFilter<"DriverProfile"> | boolean
+  suspensionReason?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"DriverProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DriverProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -280,6 +296,8 @@ export type DriverProfileOrderByWithRelationInput = {
   vehicleName?: Prisma.SortOrderInput | Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  suspendAfterTrip?: Prisma.SortOrder
+  suspensionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -301,6 +319,8 @@ export type DriverProfileWhereUniqueInput = Prisma.AtLeast<{
   vehicleName?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   capacity?: Prisma.IntFilter<"DriverProfile"> | number
   isActive?: Prisma.BoolFilter<"DriverProfile"> | boolean
+  suspendAfterTrip?: Prisma.BoolFilter<"DriverProfile"> | boolean
+  suspensionReason?: Prisma.StringNullableFilter<"DriverProfile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"DriverProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DriverProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -319,6 +339,8 @@ export type DriverProfileOrderByWithAggregationInput = {
   vehicleName?: Prisma.SortOrderInput | Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  suspendAfterTrip?: Prisma.SortOrder
+  suspensionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.DriverProfileCountOrderByAggregateInput
@@ -341,6 +363,8 @@ export type DriverProfileScalarWhereWithAggregatesInput = {
   vehicleName?: Prisma.StringNullableWithAggregatesFilter<"DriverProfile"> | string | null
   capacity?: Prisma.IntWithAggregatesFilter<"DriverProfile"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"DriverProfile"> | boolean
+  suspendAfterTrip?: Prisma.BoolWithAggregatesFilter<"DriverProfile"> | boolean
+  suspensionReason?: Prisma.StringNullableWithAggregatesFilter<"DriverProfile"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DriverProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"DriverProfile"> | Date | string
 }
@@ -354,6 +378,8 @@ export type DriverProfileCreateInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
@@ -372,6 +398,8 @@ export type DriverProfileUncheckedCreateInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
@@ -388,6 +416,8 @@ export type DriverProfileUpdateInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
@@ -406,6 +436,8 @@ export type DriverProfileUncheckedUpdateInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
@@ -423,6 +455,8 @@ export type DriverProfileCreateManyInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -436,6 +470,8 @@ export type DriverProfileUpdateManyMutationInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -450,6 +486,8 @@ export type DriverProfileUncheckedUpdateManyInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -469,6 +507,8 @@ export type DriverProfileCountOrderByAggregateInput = {
   vehicleName?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  suspendAfterTrip?: Prisma.SortOrder
+  suspensionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -487,6 +527,8 @@ export type DriverProfileMaxOrderByAggregateInput = {
   vehicleName?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  suspendAfterTrip?: Prisma.SortOrder
+  suspensionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -501,6 +543,8 @@ export type DriverProfileMinOrderByAggregateInput = {
   vehicleName?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  suspendAfterTrip?: Prisma.SortOrder
+  suspensionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -609,6 +653,8 @@ export type DriverProfileCreateWithoutUserInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
@@ -625,6 +671,8 @@ export type DriverProfileUncheckedCreateWithoutUserInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
@@ -657,6 +705,8 @@ export type DriverProfileUpdateWithoutUserInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
@@ -673,6 +723,8 @@ export type DriverProfileUncheckedUpdateWithoutUserInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
@@ -689,6 +741,8 @@ export type DriverProfileCreateWithoutTripsInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
@@ -706,6 +760,8 @@ export type DriverProfileUncheckedCreateWithoutTripsInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
@@ -737,6 +793,8 @@ export type DriverProfileUpdateWithoutTripsInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
@@ -754,6 +812,8 @@ export type DriverProfileUncheckedUpdateWithoutTripsInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
@@ -769,6 +829,8 @@ export type DriverProfileCreateWithoutConfirmedPaymentsInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
@@ -786,6 +848,8 @@ export type DriverProfileUncheckedCreateWithoutConfirmedPaymentsInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
@@ -817,6 +881,8 @@ export type DriverProfileUpdateWithoutConfirmedPaymentsInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
@@ -834,6 +900,8 @@ export type DriverProfileUncheckedUpdateWithoutConfirmedPaymentsInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
@@ -849,6 +917,8 @@ export type DriverProfileCreateWithoutQueueEntriesInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
@@ -866,6 +936,8 @@ export type DriverProfileUncheckedCreateWithoutQueueEntriesInput = {
   vehicleName?: string | null
   capacity?: number
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
@@ -897,6 +969,8 @@ export type DriverProfileUpdateWithoutQueueEntriesInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
@@ -914,6 +988,8 @@ export type DriverProfileUncheckedUpdateWithoutQueueEntriesInput = {
   vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
@@ -979,6 +1055,8 @@ export type DriverProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   vehicleName?: boolean
   capacity?: boolean
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -998,6 +1076,8 @@ export type DriverProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   vehicleName?: boolean
   capacity?: boolean
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1013,6 +1093,8 @@ export type DriverProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   vehicleName?: boolean
   capacity?: boolean
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1028,11 +1110,13 @@ export type DriverProfileSelectScalar = {
   vehicleName?: boolean
   capacity?: boolean
   isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DriverProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "phone" | "yapePhone" | "yapeName" | "licensePlate" | "vehicleName" | "capacity" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["driverProfile"]>
+export type DriverProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "phone" | "yapePhone" | "yapeName" | "licensePlate" | "vehicleName" | "capacity" | "isActive" | "suspendAfterTrip" | "suspensionReason" | "createdAt" | "updatedAt", ExtArgs["result"]["driverProfile"]>
 export type DriverProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   queueEntries?: boolean | Prisma.DriverProfile$queueEntriesArgs<ExtArgs>
@@ -1065,6 +1149,8 @@ export type $DriverProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     vehicleName: string | null
     capacity: number
     isActive: boolean
+    suspendAfterTrip: boolean
+    suspensionReason: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["driverProfile"]>
@@ -1503,6 +1589,8 @@ export interface DriverProfileFieldRefs {
   readonly vehicleName: Prisma.FieldRef<"DriverProfile", 'String'>
   readonly capacity: Prisma.FieldRef<"DriverProfile", 'Int'>
   readonly isActive: Prisma.FieldRef<"DriverProfile", 'Boolean'>
+  readonly suspendAfterTrip: Prisma.FieldRef<"DriverProfile", 'Boolean'>
+  readonly suspensionReason: Prisma.FieldRef<"DriverProfile", 'String'>
   readonly createdAt: Prisma.FieldRef<"DriverProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"DriverProfile", 'DateTime'>
 }

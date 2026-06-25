@@ -107,6 +107,54 @@ async function clearDriverQueueState(
   });
 }
 
+async function removeDriverFromWaitingQueues(tx: Tx, driverId: string) {
+  const waitingEntries = await tx.driverQueue.findMany({
+    where: {
+      driverId,
+      status: QueueStatus.WAITING,
+    },
+    select: {
+      routeId: true,
+      direction: true,
+    },
+  });
+
+  await tx.driverQueue.deleteMany({
+    where: {
+      driverId,
+      status: QueueStatus.WAITING,
+    },
+  });
+
+  for (const entry of waitingEntries) {
+    await reindexWaitingQueue(tx, {
+      routeId: entry.routeId,
+      direction: entry.direction,
+    });
+  }
+}
+
+async function applyPendingDriverSuspension(tx: Tx, driverId: string | null) {
+  if (!driverId) return;
+
+  const driver = await tx.driverProfile.findUnique({
+    where: { id: driverId },
+    select: { suspendAfterTrip: true },
+  });
+
+  if (!driver?.suspendAfterTrip) return;
+
+  await removeDriverFromWaitingQueues(tx, driverId);
+
+  await tx.driverProfile.update({
+    where: { id: driverId },
+    data: {
+      isActive: false,
+      suspendAfterTrip: false,
+    },
+  });
+}
+
 async function joinDriverQueueInTransaction(
   tx: Tx,
   input: {
@@ -147,30 +195,7 @@ async function joinDriverQueueInTransaction(
     return existingWaitingEntry;
   }
 
-  const previousWaitingEntries = await tx.driverQueue.findMany({
-    where: {
-      driverId: input.driverId,
-      status: QueueStatus.WAITING,
-    },
-    select: {
-      routeId: true,
-      direction: true,
-    },
-  });
-
-  await tx.driverQueue.deleteMany({
-    where: {
-      driverId: input.driverId,
-      status: QueueStatus.WAITING,
-    },
-  });
-
-  for (const entry of previousWaitingEntries) {
-    await reindexWaitingQueue(tx, {
-      routeId: entry.routeId,
-      direction: entry.direction,
-    });
-  }
+  await removeDriverFromWaitingQueues(tx, input.driverId);
 
   const lastEntry = await tx.driverQueue.findFirst({
     where: {
@@ -1019,6 +1044,7 @@ export async function updateDriverTripStatus(input: {
       await clearDriverQueueState(tx, {
         driverId: updatedTrip.driverId,
       });
+      await applyPendingDriverSuspension(tx, updatedTrip.driverId);
     }
 
     return updatedTrip;
@@ -1185,6 +1211,7 @@ export async function updateTripStatus(input: {
       await clearDriverQueueState(tx, {
         driverId: trip.driverId,
       });
+      await applyPendingDriverSuspension(tx, trip.driverId);
     }
 
     return trip;
@@ -1566,6 +1593,217 @@ export async function upsertDriverProfile(input: {
         isActive: true,
       },
     });
+  });
+}
+
+export async function activateDriverProfile(input: { userId: string }) {
+  return prisma.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: input.userId },
+      data: { role: UserRole.DRIVER },
+    });
+
+    return tx.driverProfile.upsert({
+      where: { userId: input.userId },
+      create: {
+        userId: input.userId,
+        isActive: true,
+      },
+      update: {
+        isActive: true,
+      },
+    });
+  });
+}
+
+export async function updateDriverActiveState(input: {
+  driverId: string;
+  isActive: boolean;
+}) {
+  return prisma.$transaction(async (tx) => {
+    if (!input.isActive) {
+      const activeTrip = await tx.trip.findFirst({
+        where: {
+          driverId: input.driverId,
+          status: { in: driverUnavailableTripStatuses },
+        },
+      });
+
+      if (activeTrip) {
+        throw new Error("No se puede deshabilitar un conductor con turno activo");
+      }
+
+      await removeDriverFromWaitingQueues(tx, input.driverId);
+    }
+
+    return tx.driverProfile.update({
+      where: { id: input.driverId },
+      data: {
+        isActive: input.isActive,
+        suspendAfterTrip: input.isActive ? false : undefined,
+        suspensionReason: input.isActive ? null : undefined,
+      },
+    });
+  });
+}
+
+export async function suspendDriverAfterCurrentTrip(input: {
+  driverId: string;
+  reason?: string;
+}) {
+  return prisma.driverProfile.update({
+    where: { id: input.driverId },
+    data: {
+      suspendAfterTrip: true,
+      suspensionReason: input.reason || "Suspensión administrativa al finalizar turno",
+    },
+  });
+}
+
+export async function cancelDriverCurrentTrip(input: {
+  driverId: string;
+  reason?: string;
+}) {
+  return prisma.$transaction(async (tx) => {
+    const trip = await tx.trip.findFirst({
+      where: {
+        driverId: input.driverId,
+        status: { in: driverUnavailableTripStatuses },
+      },
+      include: {
+        bookings: {
+          where: { status: { not: BookingStatus.CANCELLED } },
+          include: { payment: true },
+        },
+      },
+      orderBy: [{ plannedDepartureAt: "asc" }, { createdAt: "asc" }],
+    });
+
+    if (!trip) {
+      await removeDriverFromWaitingQueues(tx, input.driverId);
+      return tx.driverProfile.update({
+        where: { id: input.driverId },
+        data: {
+          isActive: false,
+          suspendAfterTrip: false,
+          suspensionReason: input.reason || "Retirado por administración",
+        },
+      });
+    }
+
+    await tx.booking.updateMany({
+      where: {
+        tripId: trip.id,
+        status: { not: BookingStatus.CANCELLED },
+      },
+      data: { status: BookingStatus.CANCELLED },
+    });
+
+    await tx.payment.updateMany({
+      where: {
+        booking: { tripId: trip.id },
+        status: { in: [PaymentStatus.PENDING, PaymentStatus.SUBMITTED] },
+      },
+      data: {
+        status: PaymentStatus.REJECTED,
+        rejectedReason:
+          input.reason || "Viaje cancelado por administración",
+      },
+    });
+
+    await tx.trip.update({
+      where: { id: trip.id },
+      data: {
+        status: TripStatus.CANCELLED,
+        bookedSeats: 0,
+        completedAt: new Date(),
+      },
+    });
+
+    await clearDriverQueueState(tx, { driverId: input.driverId });
+    await tx.driverProfile.update({
+      where: { id: input.driverId },
+      data: {
+        isActive: false,
+        suspendAfterTrip: false,
+        suspensionReason: input.reason || "Retirado por administración",
+      },
+    });
+
+    await normalizePublishedTripsForDirection(tx, {
+      routeId: trip.routeId,
+      direction: trip.direction,
+    });
+
+    return trip;
+  });
+}
+
+export async function reassignDriverCurrentTrip(input: {
+  driverId: string;
+  replacementDriverId: string;
+  reason?: string;
+}) {
+  return prisma.$transaction(async (tx) => {
+    if (input.driverId === input.replacementDriverId) {
+      throw new Error("Selecciona un conductor diferente para reasignar");
+    }
+
+    const [trip, replacementDriver] = await Promise.all([
+      tx.trip.findFirst({
+        where: {
+          driverId: input.driverId,
+          status: { in: driverUnavailableTripStatuses },
+        },
+        include: {
+          bookings: {
+            where: { status: { not: BookingStatus.CANCELLED } },
+          },
+        },
+        orderBy: [{ plannedDepartureAt: "asc" }, { createdAt: "asc" }],
+      }),
+      tx.driverProfile.findUnique({
+        where: { id: input.replacementDriverId },
+      }),
+    ]);
+
+    if (!trip) throw new Error("El conductor no tiene turno para reasignar");
+    if (!replacementDriver?.isActive) {
+      throw new Error("El conductor de reemplazo no está activo");
+    }
+    if (!replacementDriver.yapePhone || !replacementDriver.yapeName) {
+      throw new Error("El conductor de reemplazo debe tener Yape configurado");
+    }
+
+    const replacementConflict = await tx.trip.findFirst({
+      where: {
+        driverId: input.replacementDriverId,
+        status: { in: driverUnavailableTripStatuses },
+      },
+    });
+
+    if (replacementConflict) {
+      throw new Error("El conductor de reemplazo ya tiene un turno activo");
+    }
+
+    await removeDriverFromWaitingQueues(tx, input.replacementDriverId);
+
+    const updatedTrip = await tx.trip.update({
+      where: { id: trip.id },
+      data: { driverId: input.replacementDriverId },
+    });
+
+    await clearDriverQueueState(tx, { driverId: input.driverId });
+    await tx.driverProfile.update({
+      where: { id: input.driverId },
+      data: {
+        isActive: false,
+        suspendAfterTrip: false,
+        suspensionReason: input.reason || "Retirado y reemplazado por administración",
+      },
+    });
+
+    return updatedTrip;
   });
 }
 

@@ -3,30 +3,37 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
+  activateDriverProfile,
   assignDriverToTrip,
   approvePayment,
+  cancelDriverCurrentTrip,
   createTripTurn,
   enterOwnDriverQueue,
   joinDriverQueue,
   joinOwnDriverQueue,
   publishNextRampTurn,
   rejectPayment,
+  reassignDriverCurrentTrip,
   reserveSeatWithPaymentProof,
   saveRampQueues,
   saveScheduleBoard,
   submitPaymentProof,
+  suspendDriverAfterCurrentTrip,
   updateDriverBookingStatus,
   updateDriverTripStatus,
   updateDriverVehicle,
+  updateDriverActiveState,
   updateManualSeats,
   updateOwnDriverSettings,
   updateTripStatus,
   upsertDriverProfile,
 } from "@/lib/exvias/trips";
 import {
+  activateDriverProfileSchema,
   assignDriverToTripSchema,
   approvePaymentSchema,
   bookingSchema,
+  cancelDriverCurrentTripSchema,
   createTurnSchema,
   driverBookingStatusSchema,
   driverTripStatusSchema,
@@ -36,10 +43,13 @@ import {
   paymentProofSchema,
   publishNextRampTurnSchema,
   rejectPaymentSchema,
+  reassignDriverCurrentTripSchema,
   saveRampQueuesSchema,
   saveScheduleBoardSchema,
+  suspendDriverAfterTripSchema,
   upsertDriverProfileSchema,
   updateDriverVehicleSchema,
+  updateDriverActiveStateSchema,
   updateManualSeatsSchema,
   updateOwnDriverSettingsSchema,
   updateTripStatusSchema,
@@ -470,4 +480,118 @@ export async function upsertDriverProfileAction(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/driver");
   revalidatePath("/account");
+}
+
+export async function activateDriverProfileAction(formData: FormData) {
+  await requireAdmin();
+
+  const input = activateDriverProfileSchema.parse({
+    userId: value(formData, "userId"),
+  });
+
+  await activateDriverProfile(input);
+  revalidatePath("/admin");
+  revalidatePath("/admin/conductores");
+  revalidatePath("/account");
+  revalidatePath("/driver");
+  redirect("/admin/conductores?admin=driverEnabled");
+}
+
+export async function updateDriverActiveStateAction(formData: FormData) {
+  await requireAdmin();
+
+  const input = updateDriverActiveStateSchema.parse({
+    driverId: value(formData, "driverId"),
+    isActive: value(formData, "isActive"),
+  });
+
+  try {
+    await updateDriverActiveState(input);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "No se puede deshabilitar un conductor con turno activo"
+    ) {
+      redirect("/admin/conductores?admin=driverBusy");
+    }
+
+    throw error;
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/conductores");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/driver");
+  revalidatePath("/trips");
+  redirect(
+    input.isActive
+      ? "/admin/conductores?admin=driverReenabled"
+      : "/admin/conductores?admin=driverDisabled",
+  );
+}
+
+export async function suspendDriverAfterTripAction(formData: FormData) {
+  await requireAdmin();
+
+  const input = suspendDriverAfterTripSchema.parse({
+    driverId: value(formData, "driverId"),
+    reason: value(formData, "reason") || undefined,
+  });
+
+  await suspendDriverAfterCurrentTrip(input);
+  revalidatePath("/admin");
+  revalidatePath("/admin/conductores");
+  revalidatePath("/driver");
+  redirect("/admin/conductores?admin=driverSuspendAfterTrip");
+}
+
+export async function cancelDriverCurrentTripAction(formData: FormData) {
+  await requireAdmin();
+
+  const input = cancelDriverCurrentTripSchema.parse({
+    driverId: value(formData, "driverId"),
+    reason: value(formData, "reason") || undefined,
+  });
+
+  await cancelDriverCurrentTrip(input);
+  revalidatePath("/admin");
+  revalidatePath("/admin/conductores");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/driver");
+  revalidatePath("/trips");
+  revalidatePath("/my-trips");
+  redirect("/admin/conductores?admin=driverTripCancelled");
+}
+
+export async function reassignDriverCurrentTripAction(formData: FormData) {
+  await requireAdmin();
+
+  const input = reassignDriverCurrentTripSchema.parse({
+    driverId: value(formData, "driverId"),
+    replacementDriverId: value(formData, "replacementDriverId"),
+    reason: value(formData, "reason") || undefined,
+  });
+
+  try {
+    await reassignDriverCurrentTrip(input);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error.message === "El conductor de reemplazo ya tiene un turno activo" ||
+        error.message === "El conductor de reemplazo debe tener Yape configurado" ||
+        error.message === "El conductor de reemplazo no está activo")
+    ) {
+      redirect("/admin/conductores?admin=driverReassignBlocked");
+    }
+
+    throw error;
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/conductores");
+  revalidatePath("/admin/schedule");
+  revalidatePath("/driver");
+  revalidatePath("/trips");
+  revalidatePath("/my-trips");
+  redirect("/admin/conductores?admin=driverTripReassigned");
 }
