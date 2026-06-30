@@ -11,6 +11,7 @@ export function PassengerTripCard({
   label,
   departure,
   bookedSeats,
+  terminalSeats = 0,
   capacity,
   minimumToStart,
   plate,
@@ -24,6 +25,7 @@ export function PassengerTripCard({
   label: string;
   departure?: Date | null;
   bookedSeats: number;
+  terminalSeats?: number;
   capacity: number;
   minimumToStart: number;
   plate?: string | null;
@@ -145,13 +147,21 @@ export function PassengerTripCard({
       <p className="mt-2 text-xs text-slate-500">
         {bookedSeats >= minimumToStart ? (
           <>
-            Listo para confirmar salida. Quedan <strong>{capacity - bookedSeats} asientos</strong>.
+            Listo para confirmar salida. Quedan{" "}
+            <strong>{capacity - bookedSeats} cupos reales</strong>.
           </>
         ) : (
           <>
             Faltan <strong>{minimumToStart - bookedSeats} pasajeros</strong> para confirmar.
           </>
         )}
+        {terminalSeats > 0 ? (
+          <span className="font-semibold">
+            {" "}
+            Incluye {terminalSeats} pasajero
+            {terminalSeats === 1 ? "" : "s"} en terminal.
+          </span>
+        ) : null}
       </p>
     </div>
   );

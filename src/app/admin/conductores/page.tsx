@@ -290,6 +290,9 @@ function DriverAdminCard({
   const activeBookings =
     activeTrip?.bookings.filter((booking) => booking.status !== "CANCELLED") ??
     [];
+  const occupiedSeats = activeTrip
+    ? activeTrip.bookedSeats + activeTrip.manualSeats
+    : 0;
 
   return (
     <Card className="rounded-[8px]" size="sm">
@@ -317,7 +320,8 @@ function DriverAdminCard({
               <span className="font-black text-zinc-950">
                 {activeTrip.turnLabel}
               </span>{" "}
-              · {activeBookings.length}/{activeTrip.route.capacity} reservas
+              · {occupiedSeats}/{activeTrip.route.capacity} ocupados ·{" "}
+              {activeBookings.length} reservas app
             </>
           ) : isComplete ? (
             "Datos completos. Puede entrar a rampa."

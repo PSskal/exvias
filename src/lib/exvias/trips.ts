@@ -518,9 +518,16 @@ export async function getTripBookingOptions(id: string) {
     },
   });
 
+  const directionPoints = trip.route.points.filter(
+    (point) => point.direction === trip.direction,
+  );
+
   return {
     trip,
-    points: trip.route.points.filter((point) => point.direction === trip.direction),
+    // Se muestran todos los puntos (la ruta completa hasta el destino),
+    // pero el último (destino final) no es válido como punto de embarque.
+    points: directionPoints,
+    boardablePoints: directionPoints.slice(0, -1),
   };
 }
 
@@ -571,6 +578,20 @@ export async function createTripTurn(input: {
   });
 }
 
+async function assertBoardableRoutePoint(
+  tx: Tx,
+  boardingPoint: { id: string; routeId: string; direction: RouteDirection },
+) {
+  const lastPoint = await tx.routePoint.findFirst({
+    where: { routeId: boardingPoint.routeId, direction: boardingPoint.direction },
+    orderBy: { sequence: "desc" },
+  });
+
+  if (lastPoint && lastPoint.id === boardingPoint.id) {
+    throw new Error("No puedes embarcar en el destino final de este turno");
+  }
+}
+
 export async function reserveSeat(input: {
   tripId: string;
   boardingPointId: string;
@@ -601,6 +622,7 @@ export async function reserveSeat(input: {
     });
 
     if (!boardingPoint) throw new Error("Punto de embarque inválido para este turno");
+    await assertBoardableRoutePoint(tx, boardingPoint);
 
     const capacityUpdate = await tx.trip.updateMany({
       where: {
@@ -710,6 +732,7 @@ export async function reserveSeatWithPaymentProof(input: {
     });
 
     if (!boardingPoint) throw new Error("Punto de embarque inválido para este turno");
+    await assertBoardableRoutePoint(tx, boardingPoint);
 
     const capacityUpdate = await tx.trip.updateMany({
       where: {

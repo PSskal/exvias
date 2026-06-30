@@ -93,7 +93,7 @@ function DriverInfoRow({
 export default async function DriverPage({
   searchParams,
 }: {
-  searchParams: Promise<{ settings?: string }>;
+  searchParams: Promise<{ settings?: string; seats?: string }>;
 }) {
   const params = await searchParams;
   const user = await getCurrentUser();
@@ -136,7 +136,15 @@ export default async function DriverPage({
   return (
     <PhoneShell>
       <StatusBar />
-      <PageToast type={params.settings === "saved" ? "settingsSaved" : null} />
+      <PageToast
+        type={
+          params.settings === "saved"
+            ? "settingsSaved"
+            : params.seats === "updated"
+              ? "manualSeatsUpdated"
+              : null
+        }
+      />
       <BlueHeader title="Conductor" subtitle="Operación del día" href="/account" />
       <ContentArea withBottomNav className="space-y-4">
         <AppCard className="overflow-hidden bg-white p-0">
@@ -405,7 +413,7 @@ function CurrentTripCard({ trip }: { trip: DriverTrip }) {
               Pasajeros en terminal
             </p>
             <p className="mt-1 text-xs font-semibold text-slate-500">
-              No usan la app, pero ocupan asiento.
+              Súmalos apenas suban para no vender más cupos por app.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -431,7 +439,8 @@ function CurrentTripCard({ trip }: { trip: DriverTrip }) {
           </div>
         </div>
         <p className="mt-3 text-xs font-semibold text-slate-500">
-          Reservas por app: {trip.bookedSeats}. Libres: {remainingSeats}.
+          Reservas por app: {trip.bookedSeats}. En terminal:{" "}
+          {trip.manualSeats}. Libres: {remainingSeats}.
         </p>
       </div>
 

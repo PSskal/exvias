@@ -50,6 +50,11 @@ const messages = {
     description: "El conductor de reemplazo no está disponible o no tiene Yape listo.",
     tone: "error",
   },
+  manualSeatsUpdated: {
+    title: "Cupos actualizados",
+    description: "La disponibilidad visible para pasajeros ya fue actualizada.",
+    tone: "success",
+  },
 } as const;
 
 export function PageToast({
@@ -73,6 +78,7 @@ export function PageToast({
     const params = new URLSearchParams(searchParams);
     params.delete("settings");
     params.delete("admin");
+    params.delete("seats");
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }, [pathname, router, searchParams, type]);

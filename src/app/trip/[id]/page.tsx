@@ -40,7 +40,7 @@ export default async function TripPage({
 
   if (!details) notFound();
 
-  const { trip, points } = details;
+  const { trip, points, boardablePoints } = details;
   const occupiedSeats = trip.bookedSeats + trip.manualSeats;
   const remainingSeats = trip.route.capacity - occupiedSeats;
   const farePen = Number(trip.route.farePen);
@@ -105,6 +105,7 @@ export default async function TripPage({
 
           <RoutePointMapPicker
             points={points}
+            boardablePointIds={boardablePoints.map((point) => point.id)}
             plannedDepartureAtIso={trip.plannedDepartureAt?.toISOString()}
           />
 
@@ -126,19 +127,31 @@ export default async function TripPage({
                   name="passengerName"
                   defaultValue={user?.name ?? ""}
                   required
+                  minLength={2}
+                  pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' ]+"
+                  title="Ingresa solo nombres y apellidos"
                   className="h-11 rounded-[10px] bg-slate-50"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="passengerPhone">Celular</Label>
+                <Label htmlFor="passengerPhone">Celular peruano</Label>
                 <Input
                   id="passengerPhone"
                   name="passengerPhone"
                   defaultValue={passengerProfile?.phone ?? ""}
                   required
+                  maxLength={9}
+                  minLength={9}
+                  pattern="9[0-9]{8}"
+                  placeholder="987654321"
+                  title="Ingresa un celular peruano de 9 dígitos que empiece con 9"
                   inputMode="tel"
+                  autoComplete="tel-national"
                   className="h-11 rounded-[10px] bg-slate-50"
                 />
+                <p className="text-xs font-semibold text-slate-500">
+                  Debe tener 9 dígitos y empezar con 9.
+                </p>
               </div>
             </div>
           </AppCard>

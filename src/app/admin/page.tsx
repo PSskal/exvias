@@ -131,7 +131,8 @@ export default async function AdminPage({
                           {trip.turnLabel} - {trip.driver?.user.name}
                         </p>
                         <p className="truncate text-xs font-semibold text-zinc-500">
-                          {trip.bookings.length}/{trip.route.capacity} pasajeros
+                          {trip.bookedSeats + trip.manualSeats}/
+                          {trip.route.capacity} pasajeros
                         </p>
                       </div>
                       <StatusBadge value={trip.status} />

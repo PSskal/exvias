@@ -314,6 +314,7 @@ export async function updateManualSeatsAction(formData: FormData) {
   revalidatePath(`/trip/${input.tripId}`);
   revalidatePath("/admin");
   revalidatePath("/admin/schedule");
+  redirect("/driver?seats=updated");
 }
 
 export async function createTripTurnAction(formData: FormData) {

@@ -89,6 +89,7 @@ export default async function TripsPage({
                 label={trip.turnLabel}
                 departure={trip.plannedDepartureAt}
                 bookedSeats={trip.bookedSeats + trip.manualSeats}
+                terminalSeats={trip.manualSeats}
                 capacity={trip.route.capacity}
                 minimumToStart={trip.route.minimumToStart}
                 plate={trip.driver?.licensePlate}

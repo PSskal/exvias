@@ -7,6 +7,22 @@ const vehicleIds = vehicleCatalog.map((vehicle) => vehicle.id) as [
   ...string[],
 ];
 
+const peruvianMobileSchema = z
+  .string()
+  .trim()
+  .transform((value) => value.replace(/\D/g, ""))
+  .pipe(
+    z
+      .string()
+      .regex(/^9\d{8}$/, "Ingresa un celular peruano válido de 9 dígitos"),
+  );
+
+const passengerNameSchema = z
+  .string()
+  .trim()
+  .min(2, "Ingresa tu nombre")
+  .regex(/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' ]+$/, "Ingresa un nombre válido");
+
 export const directionSchema = z.enum([
   RouteDirection.CUSCO_TO_COLQUEPATA,
   RouteDirection.COLQUEPATA_TO_CUSCO,
@@ -21,8 +37,8 @@ export const createTurnSchema = z.object({
 export const bookingSchema = z.object({
   tripId: z.string().min(1),
   boardingPointId: z.string().min(1),
-  passengerName: z.string().trim().min(2, "Ingresa tu nombre"),
-  passengerPhone: z.string().trim().min(6, "Ingresa un celular válido"),
+  passengerName: passengerNameSchema,
+  passengerPhone: peruvianMobileSchema,
 });
 
 export const paymentProofSchema = z
@@ -30,12 +46,8 @@ export const paymentProofSchema = z
     bookingId: z.string().min(1).optional(),
     tripId: z.string().min(1).optional(),
     boardingPointId: z.string().min(1).optional(),
-    passengerName: z.string().trim().min(2, "Ingresa tu nombre").optional(),
-    passengerPhone: z
-      .string()
-      .trim()
-      .min(6, "Ingresa un celular válido")
-      .optional(),
+    passengerName: passengerNameSchema.optional(),
+    passengerPhone: peruvianMobileSchema.optional(),
     proofUrl: z.string().trim().min(1, "Adjunta la captura del comprobante"),
   })
   .refine((input) => input.bookingId || input.tripId, {
