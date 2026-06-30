@@ -53,6 +53,11 @@ export type DriverProfile = Prisma.DriverProfileModel
  */
 export type Route = Prisma.RouteModel
 /**
+ * Model RouteAlert
+ * 
+ */
+export type RouteAlert = Prisma.RouteAlertModel
+/**
  * Model RoutePoint
  * 
  */

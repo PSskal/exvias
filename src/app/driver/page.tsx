@@ -2,20 +2,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  Ambulance,
   CheckCircle2,
+  CircleAlert,
   Clock3,
   CreditCard,
   MapPin,
+  MapPinned,
   Minus,
   Phone,
   Plus,
   Route,
+  ShieldAlert,
+  Siren,
+  Trash2,
+  TrafficCone,
+  TriangleAlert,
   UserCheck,
   UserX,
   UsersRound,
+  type LucideIcon,
 } from "lucide-react";
 import {
   approvePaymentAction,
+  clearRouteAlertAction,
   enterOwnDriverQueueAction,
   joinOwnDriverQueueAction,
   rejectPaymentAction,
@@ -26,6 +36,7 @@ import {
 import {
   BookingStatus,
   PaymentStatus,
+  RouteAlertType,
   RouteDirection,
   TripStatus,
 } from "@/lib/generated/prisma/client";
@@ -36,7 +47,9 @@ import {
   routeDirectionLabels,
 } from "@/lib/exvias/constants";
 import { getDriverDashboard } from "@/lib/exvias/trips";
+import { listActiveRouteAlerts } from "@/lib/exvias/alerts";
 import { getCurrentUser } from "@/lib/session";
+import { cn } from "@/lib/utils";
 import {
   AppCard,
   BlueHeader,
@@ -54,6 +67,26 @@ export const dynamic = "force-dynamic";
 type DriverDashboard = NonNullable<Awaited<ReturnType<typeof getDriverDashboard>>>;
 type DriverTrip = DriverDashboard["trips"][number];
 type DriverBooking = DriverTrip["bookings"][number];
+type RouteAlertWithDriver = Awaited<ReturnType<typeof listActiveRouteAlerts>>[number];
+
+const ALERT_TYPE_INFO: Record<
+  RouteAlertType,
+  { label: string; Icon: LucideIcon; colorClass: string }
+> = {
+  CONTROL_POLICIAL: { label: "Control policial", Icon: Siren, colorClass: "text-[#1E5BFF]" },
+  OPERATIVO: { label: "Operativo", Icon: ShieldAlert, colorClass: "text-[#E53935]" },
+  ACCIDENTE: { label: "Accidente", Icon: Ambulance, colorClass: "text-[#E53935]" },
+  TRAFICO: { label: "Tráfico", Icon: TrafficCone, colorClass: "text-[#F4B400]" },
+  OTRO: { label: "Otro", Icon: CircleAlert, colorClass: "text-slate-500" },
+};
+
+function timeAgo(date: Date) {
+  const minutes = Math.max(0, Math.round((Date.now() - date.getTime()) / 60_000));
+  if (minutes < 1) return "ahora";
+  if (minutes < 60) return `hace ${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  return `hace ${hours} h`;
+}
 
 function oppositeDirection(direction: RouteDirection) {
   return direction === RouteDirection.CUSCO_TO_COLQUEPATA
@@ -90,10 +123,93 @@ function DriverInfoRow({
   );
 }
 
+function RouteAlertsCard({
+  alerts,
+  driverId,
+}: {
+  alerts: RouteAlertWithDriver[];
+  driverId: string;
+}) {
+  return (
+    <AppCard className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#F4B400]/15 text-[#8a6500]">
+            <TriangleAlert className="size-4" />
+          </div>
+          <div>
+            <p className="text-sm font-black text-slate-950">Alertas en tu ruta</p>
+            <p className="text-xs font-semibold text-slate-500">
+              Controles, operativos y novedades reportadas
+            </p>
+          </div>
+        </div>
+        <Link
+          href="/driver/report"
+          className="flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#073FEA] px-3.5 text-xs font-black text-white"
+        >
+          <MapPinned className="size-4" />
+          Reportar
+        </Link>
+      </div>
+
+      {alerts.length === 0 ? (
+        <p className="rounded-[12px] bg-[#F5F7FA] p-3 text-xs font-semibold text-slate-500">
+          No hay alertas activas reportadas por conductores.
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {alerts.map((alert) => {
+            const info = ALERT_TYPE_INFO[alert.type];
+            const Icon = info.Icon;
+            const isOwn = alert.createdById === driverId;
+            return (
+              <div
+                key={alert.id}
+                className="flex items-center gap-2.5 rounded-[14px] bg-[#F5F7FA] p-2.5"
+              >
+                <Link
+                  href={`/driver/report?alertId=${alert.id}`}
+                  className="flex min-w-0 flex-1 items-center gap-2.5"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white shadow-sm">
+                    <Icon className={cn("size-4", info.colorClass)} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-black text-slate-950">
+                      {info.label}
+                    </p>
+                    <p className="truncate text-xs font-semibold text-slate-500">
+                      {timeAgo(alert.createdAt)}
+                      {isOwn ? " · Reportada por ti" : ""} · Ver en mapa
+                    </p>
+                  </div>
+                </Link>
+                {isOwn ? (
+                  <form action={clearRouteAlertAction}>
+                    <input type="hidden" name="alertId" value={alert.id} />
+                    <Button
+                      type="submit"
+                      aria-label="Quitar alerta"
+                      className="size-9 shrink-0 rounded-full bg-white p-0 text-slate-500 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50"
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </form>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </AppCard>
+  );
+}
+
 export default async function DriverPage({
   searchParams,
 }: {
-  searchParams: Promise<{ settings?: string; seats?: string }>;
+  searchParams: Promise<{ settings?: string; seats?: string; alert?: string }>;
 }) {
   const params = await searchParams;
   const user = await getCurrentUser();
@@ -132,6 +248,9 @@ export default async function DriverPage({
     ? trips.filter((trip) => trip.id !== currentTrip.id)
     : [];
   const selectedVehicle = getVehicleOption(driver.vehicleName);
+  const routeAlerts = dashboard.routes[0]
+    ? await listActiveRouteAlerts(dashboard.routes[0].id)
+    : [];
 
   return (
     <PhoneShell>
@@ -142,7 +261,9 @@ export default async function DriverPage({
             ? "settingsSaved"
             : params.seats === "updated"
               ? "manualSeatsUpdated"
-              : null
+              : params.alert === "reported"
+                ? "alertReported"
+                : null
         }
       />
       <BlueHeader title="Conductor" subtitle="Operación del día" href="/account" />
@@ -193,6 +314,8 @@ export default async function DriverPage({
             />
           </div>
         </AppCard>
+
+        <RouteAlertsCard alerts={routeAlerts} driverId={driver.id} />
 
         {!currentTrip ? (
           waitingQueue ? (

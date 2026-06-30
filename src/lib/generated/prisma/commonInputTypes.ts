@@ -219,6 +219,50 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
+export type EnumRouteAlertTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.RouteAlertType | Prisma.EnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RouteAlertType[] | Prisma.ListEnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RouteAlertType[] | Prisma.ListEnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRouteAlertTypeFilter<$PrismaModel> | $Enums.RouteAlertType
+}
+
+export type FloatFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type EnumRouteAlertTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RouteAlertType | Prisma.EnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RouteAlertType[] | Prisma.ListEnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RouteAlertType[] | Prisma.ListEnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRouteAlertTypeWithAggregatesFilter<$PrismaModel> | $Enums.RouteAlertType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRouteAlertTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRouteAlertTypeFilter<$PrismaModel>
+}
+
+export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedFloatFilter<$PrismaModel>
+  _min?: Prisma.NestedFloatFilter<$PrismaModel>
+  _max?: Prisma.NestedFloatFilter<$PrismaModel>
+}
+
 export type EnumRouteDirectionFilter<$PrismaModel = never> = {
   equals?: $Enums.RouteDirection | Prisma.EnumRouteDirectionFieldRefInput<$PrismaModel>
   in?: $Enums.RouteDirection[] | Prisma.ListEnumRouteDirectionFieldRefInput<$PrismaModel>
@@ -564,6 +608,39 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
+}
+
+export type NestedEnumRouteAlertTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.RouteAlertType | Prisma.EnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RouteAlertType[] | Prisma.ListEnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RouteAlertType[] | Prisma.ListEnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRouteAlertTypeFilter<$PrismaModel> | $Enums.RouteAlertType
+}
+
+export type NestedEnumRouteAlertTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RouteAlertType | Prisma.EnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RouteAlertType[] | Prisma.ListEnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RouteAlertType[] | Prisma.ListEnumRouteAlertTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRouteAlertTypeWithAggregatesFilter<$PrismaModel> | $Enums.RouteAlertType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRouteAlertTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRouteAlertTypeFilter<$PrismaModel>
+}
+
+export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedFloatFilter<$PrismaModel>
+  _min?: Prisma.NestedFloatFilter<$PrismaModel>
+  _max?: Prisma.NestedFloatFilter<$PrismaModel>
 }
 
 export type NestedEnumRouteDirectionFilter<$PrismaModel = never> = {

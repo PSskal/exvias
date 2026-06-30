@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type RouteMapPoint = {
+export type RouteMapPoint = {
   id: string;
   name: string;
   minuteOffset: number;
@@ -93,10 +92,17 @@ type GoogleDirectionsRenderer = {
   setDirections(result: GoogleDirectionsResult): void;
 };
 
+type MapPadding = number | { top?: number; right?: number; bottom?: number; left?: number };
+
 type GoogleMapInstance = {
-  fitBounds(bounds: unknown, padding?: number): void;
+  fitBounds(bounds: unknown, padding?: MapPadding): void;
   setCenter(position: LatLngLiteral): void;
-  panTo(position: LatLngLiteral): void;
+  setZoom(zoom: number): void;
+  getZoom(): number | undefined;
+  addListener(
+    eventName: string,
+    handler: (event: { latLng: { lat(): number; lng(): number } | null }) => void,
+  ): { remove(): void };
 };
 
 type GoogleMarker = {
@@ -106,7 +112,7 @@ type GoogleMarker = {
   map?: GoogleMapInstance | null;
 };
 
-type LatLngLiteral = {
+export type LatLngLiteral = {
   lat: number;
   lng: number;
 };
@@ -125,23 +131,29 @@ declare global {
 const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const googleMapsMapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
 
-function pointTime(
-  point: RouteMapPoint,
-  plannedDepartureAtIso?: string | null,
+// Arma un <svg> plano (string) a partir de nodos de ícono estilo lucide
+// ([tag, atributos][]), para usar dentro de marcadores del mapa (DOM normal,
+// no React). No usa renderToStaticMarkup a propósito: invocarlo desde dentro
+// de un render del lado del servidor puede chocar con el propio render de
+// Next y tirar un "Invalid hook call".
+export function svgIconHtml(
+  nodes: Array<[string, Record<string, string | number>]>,
+  color: string,
+  size = 18,
 ) {
-  if (!plannedDepartureAtIso) return `+${point.minuteOffset} min`;
+  const inner = nodes
+    .map(([tag, attrs]) => {
+      const attrString = Object.entries(attrs)
+        .map(([key, value]) => `${key}="${value}"`)
+        .join(" ");
+      return `<${tag} ${attrString} />`;
+    })
+    .join("");
 
-  const date = new Date(
-    new Date(plannedDepartureAtIso).getTime() + point.minuteOffset * 60_000,
-  );
-
-  return date.toLocaleTimeString("es-PE", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 }
 
-function pointPosition(point: RouteMapPoint): LatLngLiteral | null {
+export function pointPosition(point: RouteMapPoint): LatLngLiteral | null {
   if (point.latitude === null || point.longitude === null) return null;
   return { lat: point.latitude, lng: point.longitude };
 }
@@ -271,6 +283,7 @@ async function createMarker(input: {
   map: GoogleMapInstance;
   point: RouteMapPoint;
   selected: boolean;
+  boardable: boolean;
   onClick: () => void;
 }): Promise<GoogleMarker | null> {
   const position = pointPosition(input.point);
@@ -294,9 +307,11 @@ async function createMarker(input: {
       path: input.maps.SymbolPath.CIRCLE,
       fillColor: input.selected
         ? "#2ECC71"
-        : input.point.isTerminal
-          ? "#E53935"
-          : "#1E5BFF",
+        : !input.boardable
+          ? "#94A3B8"
+          : input.point.isTerminal
+            ? "#E53935"
+            : "#1E5BFF",
       fillOpacity: 1,
       strokeColor: "#ffffff",
       strokeWeight: 4,
@@ -314,6 +329,7 @@ async function createAdvancedMarker(
     map: GoogleMapInstance;
     point: RouteMapPoint;
     selected: boolean;
+    boardable: boolean;
     onClick: () => void;
   },
   position: LatLngLiteral,
@@ -338,22 +354,29 @@ async function createAdvancedMarker(
     position,
     title: input.point.name,
     gmpClickable: true,
-    content: createAdvancedMarkerContent(input.point, input.selected),
+    content: createAdvancedMarkerContent(input.point, input.selected, input.boardable),
   });
 
   marker.addEventListener?.("gmp-click", input.onClick);
   return marker;
 }
 
-function createAdvancedMarkerContent(point: RouteMapPoint, selected: boolean) {
+function createAdvancedMarkerContent(
+  point: RouteMapPoint,
+  selected: boolean,
+  boardable: boolean,
+) {
   const wrapper = document.createElement("div");
   wrapper.className = cn(
-    "grid size-9 place-items-center rounded-full border-[3px] border-white text-white shadow-[0_10px_24px_rgba(15,23,42,0.25)] transition",
-    selected
-      ? "scale-110 bg-[#2ECC71]"
-      : point.isTerminal
+    "grid place-items-center rounded-full border-[3px] border-white text-white shadow-[0_10px_24px_rgba(15,23,42,0.3)] transition-transform",
+    selected ? "size-11 scale-110 bg-[#2ECC71]" : "size-9",
+    !selected && !boardable
+      ? "bg-slate-400"
+      : !selected && point.isTerminal
         ? "bg-[#E53935]"
-        : "bg-[#1E5BFF]",
+        : !selected
+          ? "bg-[#1E5BFF]"
+          : "",
   );
 
   const label = document.createElement("span");
@@ -364,6 +387,87 @@ function createAdvancedMarkerContent(point: RouteMapPoint, selected: boolean) {
   return wrapper;
 }
 
+// Marcador simple con un emoji, usado para el pin libre (driver eligiendo
+// dónde reportar) y para mostrar alertas existentes sobre la ruta.
+export type MapMarkerPoint = {
+  id: string;
+  position: LatLngLiteral;
+  // Markup de un ícono ya renderizado (p.ej. con renderToStaticMarkup sobre
+  // un ícono de lucide-react). Este componente no sabe nada de qué ícono es,
+  // solo lo inserta — así no depende de lucide-react directamente.
+  iconHtml: string;
+  highlighted?: boolean;
+  // Anillo pulsante rojo: señala "esto es una alerta activa" en el mapa.
+  pulse?: boolean;
+  onClick?: () => void;
+};
+
+async function createMapMarker(input: {
+  maps: GoogleMapsApi;
+  map: GoogleMapInstance;
+  point: MapMarkerPoint;
+}): Promise<GoogleMarker | null> {
+  if (googleMapsMapId && input.maps.importLibrary) {
+    const markerLibrary = await input.maps.importLibrary("marker");
+    if (
+      markerLibrary &&
+      typeof markerLibrary === "object" &&
+      "AdvancedMarkerElement" in markerLibrary
+    ) {
+      const AdvancedMarkerElement = markerLibrary.AdvancedMarkerElement as new (
+        options: Record<string, unknown>,
+      ) => GoogleMarker;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "relative grid place-items-center";
+
+      if (input.point.pulse) {
+        const ring = document.createElement("span");
+        ring.className =
+          "absolute inset-0 animate-ping rounded-full bg-[#E53935]/60";
+        wrapper.appendChild(ring);
+      }
+
+      const badge = document.createElement("span");
+      badge.className = cn(
+        "relative grid place-items-center rounded-full border-[3px] border-white bg-white text-slate-700 shadow-[0_10px_24px_rgba(15,23,42,0.3)]",
+        input.point.highlighted ? "size-11 scale-110" : "size-9",
+      );
+      badge.innerHTML = input.point.iconHtml;
+      wrapper.appendChild(badge);
+
+      const marker = new AdvancedMarkerElement({
+        map: input.map,
+        position: input.point.position,
+        gmpClickable: Boolean(input.point.onClick),
+        content: wrapper,
+      });
+      if (input.point.onClick) {
+        marker.addEventListener?.("gmp-click", input.point.onClick);
+      }
+      return marker;
+    }
+  }
+
+  const marker = new input.maps.Marker({
+    map: input.map,
+    position: input.point.position,
+    title: "Alerta",
+    icon: {
+      path: input.maps.SymbolPath.CIRCLE,
+      fillColor: "#ffffff",
+      fillOpacity: 1,
+      strokeColor: input.point.pulse ? "#E53935" : "#ffffff",
+      strokeWeight: 4,
+      scale: input.point.highlighted ? 14 : 12,
+    },
+  });
+  if (input.point.onClick) {
+    marker.addListener?.("click", input.point.onClick);
+  }
+  return marker;
+}
+
 function clearMarkers(markers: GoogleMarker[]) {
   markers.forEach((marker) => {
     if (marker.setMap) marker.setMap(null);
@@ -371,39 +475,97 @@ function clearMarkers(markers: GoogleMarker[]) {
   });
 }
 
-export function RoutePointMapPicker({
+// Centra el mapa en `position` con zoom `targetZoom`, pero desplazado hacia
+// arriba para que el punto caiga a la mitad del área visible (encima de la
+// ficha inferior), no en el centro geométrico del div.
+//
+// No usamos panTo + setZoom + panBy porque setZoom no aplica su nueva escala
+// de forma síncrona: un panBy inmediatamente después se calcula con el zoom
+// viejo, y si el salto de zoom es grande (p.ej. de la vista general a un
+// punto puntual) el desplazamiento termina siendo completamente erróneo.
+// En vez de eso, calculamos el corrimiento en grados directamente con la
+// resolución del zoom final.
+function focusMapOn(
+  map: GoogleMapInstance,
+  position: LatLngLiteral,
+  bottomInsetPx: number,
+  minZoom: number,
+) {
+  const targetZoom = Math.max(map.getZoom() ?? 0, minZoom);
+  const metersPerPixel =
+    (156543.03392 * Math.cos((position.lat * Math.PI) / 180)) /
+    Math.pow(2, targetZoom);
+  const shiftMeters = (bottomInsetPx / 2) * metersPerPixel;
+  const shiftDegreesLat = shiftMeters / 111_320;
+
+  map.setZoom(targetZoom);
+  map.setCenter({ lat: position.lat - shiftDegreesLat, lng: position.lng });
+}
+
+const OVERVIEW_PADDING = { top: 100, right: 56, left: 56 };
+// Aire extra debajo del alto real de la ficha, para que la ruta no quede
+// pegada al borde del panel sino centrada con margen en el área visible.
+const OVERVIEW_BOTTOM_GAP = 90;
+const SELECTED_POINT_ZOOM = 15;
+
+export function RouteMapCanvas({
   points,
   boardablePointIds,
-  plannedDepartureAtIso,
+  selectedPointId,
+  onSelectPoint,
+  bottomInsetPx = 320,
+  onMapClick,
+  draftPin,
+  extraMarkers,
+  focusTarget,
+  className,
 }: {
   points: RouteMapPoint[];
   boardablePointIds: string[];
-  plannedDepartureAtIso?: string | null;
+  selectedPointId: string | null;
+  onSelectPoint: (id: string) => void;
+  // Alto aproximado del panel inferior que tapa parte del mapa, para que la
+  // ruta y el punto seleccionado queden centrados en el área realmente
+  // visible (arriba de la ficha), no en el centro geométrico del div.
+  bottomInsetPx?: number;
+  // Modo "pin libre": si se pasa, tocar cualquier parte del mapa reporta la
+  // posición tocada (se usa para que un conductor marque una alerta, a
+  // diferencia de los `points` fijos que elige un pasajero).
+  onMapClick?: (position: LatLngLiteral) => void;
+  draftPin?: MapMarkerPoint | null;
+  extraMarkers?: MapMarkerPoint[];
+  // Pide centrar y hacer zoom a una posición arbitraria (p.ej. al tocar una
+  // alerta existente para verla). `key` debe cambiar para que se repita el
+  // enfoque aunque la posición sea la misma que la anterior.
+  focusTarget?: { position: LatLngLiteral; key: string } | null;
+  className?: string;
 }) {
   const boardableSet = useMemo(
     () => new Set(boardablePointIds),
     [boardablePointIds],
   );
-  const boardablePoints = useMemo(
-    () => points.filter((point) => boardableSet.has(point.id)),
-    [points, boardableSet],
-  );
 
-  const defaultPoint =
-    boardablePoints.find((point) => !point.isTerminal)?.id ??
-    boardablePoints[0]?.id ??
-    null;
-
-  const [selectedPointId, setSelectedPointId] = useState<string | null>(
-    defaultPoint,
-  );
   const [mapError, setMapError] = useState<string | null>(null);
+  // Bounds de la ruta ya resuelta por Directions API. Es estado (no ref) para
+  // que el efecto de encuadre reaccione tanto a esto como al alto real de la
+  // ficha inferior, sin importar cuál de los dos esté listo primero.
+  const [routeBounds, setRouteBounds] = useState<GoogleLatLngBounds | null>(null);
 
   const mapElementRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<GoogleMapInstance | null>(null);
   // Usamos DirectionsRenderer en vez de Polyline para dibujar la ruta real
   const directionsRendererRef = useRef<GoogleDirectionsRenderer | null>(null);
   const markersRef = useRef<GoogleMarker[]>([]);
+  const extraMarkersRef = useRef<GoogleMarker[]>([]);
+  // Espejo del callback en un ref: el listener de click del mapa se agrega
+  // una sola vez y siempre debe llamar a la versión más reciente.
+  const onMapClickRef = useRef(onMapClick);
+  useEffect(() => {
+    onMapClickRef.current = onMapClick;
+  }, [onMapClick]);
+  // Mientras el usuario no haya tocado un punto, el encuadre general (overview)
+  // puede seguir re-ajustándose cuando se mide el alto real de la ficha inferior.
+  const userHasSelectedRef = useRef(false);
 
   const locatedPoints = useMemo(
     () => points.filter((point) => pointPosition(point)),
@@ -411,6 +573,12 @@ export function RoutePointMapPicker({
   );
 
   const selectedPoint = points.find((point) => point.id === selectedPointId);
+  // Espejo del prop en un ref para leerlo dentro de efectos sin que su
+  // cambio dispare ese efecto (solo nos importa el valor más reciente).
+  const bottomInsetRef = useRef(bottomInsetPx);
+  useEffect(() => {
+    bottomInsetRef.current = bottomInsetPx;
+  }, [bottomInsetPx]);
 
   const canUseGoogleMap = Boolean(
     googleMapsApiKey &&
@@ -419,7 +587,7 @@ export function RoutePointMapPicker({
   );
 
   const mapUnavailableMessage = !googleMapsApiKey
-    ? "Falta configurar NEXT_PUBLIC_GOOGLE_MAPS_API_KEY y reiniciar el servidor."
+    ? "Falta configurar el mapa. Elige tu punto en la lista de abajo."
     : locatedPoints.length !== points.length
       ? "Faltan coordenadas en algunos puntos de subida."
       : points.length <= 1
@@ -471,6 +639,13 @@ export function RoutePointMapPicker({
             clickableIcons: false,
             gestureHandling: "greedy",
           });
+
+          mapRef.current.addListener("click", (event) => {
+            const latLng = event.latLng;
+            if (latLng) {
+              onMapClickRef.current?.({ lat: latLng.lat(), lng: latLng.lng() });
+            }
+          });
         }
 
         const map = mapRef.current;
@@ -501,9 +676,10 @@ export function RoutePointMapPicker({
 
         renderer.setDirections(directionsResult);
 
-        // fitBounds usando los bounds que devuelve la propia ruta
+        // El encuadre (fitBounds) lo aplica el efecto dedicado más abajo,
+        // que también reacciona si el alto real de la ficha llega después.
         if (directionsResult.routes[0]?.bounds) {
-          map.fitBounds(directionsResult.routes[0].bounds, 54);
+          setRouteBounds(directionsResult.routes[0].bounds);
         }
       } catch (error) {
         if (!cancelled) {
@@ -524,6 +700,8 @@ export function RoutePointMapPicker({
       directionsRendererRef.current = null;
       clearMarkers(markersRef.current);
       markersRef.current = [];
+      clearMarkers(extraMarkersRef.current);
+      extraMarkersRef.current = [];
     };
   }, [canUseGoogleMap, locatedPoints]);
 
@@ -550,7 +728,10 @@ export function RoutePointMapPicker({
             map,
             point,
             selected: point.id === selectedPointId,
-            onClick: () => setSelectedPointId(point.id),
+            boardable: boardableSet.has(point.id),
+            onClick: () => {
+              if (boardableSet.has(point.id)) onSelectPoint(point.id);
+            },
           }),
         ),
       );
@@ -570,120 +751,112 @@ export function RoutePointMapPicker({
     return () => {
       cancelled = true;
     };
-  }, [canUseGoogleMap, locatedPoints, selectedPointId]);
+    // `routeBounds` se incluye solo como señal de "el mapa ya está listo"
+    // (el mapa se crea de forma asíncrona en el efecto 1): sin esto, si
+    // ninguna otra dependencia cambia después del montaje, los marcadores
+    // nunca llegan a dibujarse.
+  }, [canUseGoogleMap, locatedPoints, selectedPointId, boardableSet, onSelectPoint, routeBounds]);
 
-  // Efecto 3: panTo al punto seleccionado
+  // Efecto 2b: dibuja el pin libre (borrador) y los marcadores extra (p.ej.
+  // alertas ya reportadas en la ruta), independiente de los `points` fijos.
   useEffect(() => {
+    if (!mapRef.current || !canUseGoogleMap) return;
+
+    const maps = window.google?.maps;
+    if (!maps) return;
+
+    const map = mapRef.current;
+    let cancelled = false;
+
+    const allMarkerPoints = [
+      ...(extraMarkers ?? []),
+      ...(draftPin ? [draftPin] : []),
+    ];
+
+    async function updateExtraMarkers() {
+      clearMarkers(extraMarkersRef.current);
+      extraMarkersRef.current = [];
+
+      const newMarkers = await Promise.all(
+        allMarkerPoints.map((point) => createMapMarker({ maps: maps!, map, point })),
+      );
+
+      if (cancelled) {
+        newMarkers.forEach((m) => m?.setMap(null));
+        return;
+      }
+
+      extraMarkersRef.current = newMarkers.filter((m): m is GoogleMarker => Boolean(m));
+    }
+
+    void updateExtraMarkers();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [canUseGoogleMap, draftPin, extraMarkers, routeBounds]);
+
+  // Efecto 3: al cambiar la selección, hacer zoom y centrar el punto en el
+  // área visible (arriba de la ficha inferior), como un mapa de apps modernas.
+  // La primera selección (al montar) no anima: ya se ve completa por el fitBounds.
+  const isFirstSelectionRef = useRef(true);
+  useEffect(() => {
+    if (isFirstSelectionRef.current) {
+      isFirstSelectionRef.current = false;
+      return;
+    }
+
+    userHasSelectedRef.current = true;
+
     if (!mapRef.current || !selectedPoint) return;
 
     const selectedPosition = pointPosition(selectedPoint);
-    if (selectedPosition) mapRef.current.panTo(selectedPosition);
+    if (!selectedPosition) return;
+
+    focusMapOn(mapRef.current, selectedPosition, bottomInsetRef.current, SELECTED_POINT_ZOOM);
   }, [selectedPoint]);
+
+  // Efecto 3b: enfocar una posición arbitraria a pedido (p.ej. el conductor
+  // tocó una alerta existente para verla). Mismo zoom/offset que el efecto 3.
+  // También reacciona a `routeBounds` porque el mapa se crea de forma
+  // asíncrona: si `focusTarget` ya viene listo al montar (se entró por un
+  // link "ver en mapa"), el primer intento puede caer antes de que
+  // `mapRef.current` exista; cuando el mapa queda listo, se reintenta.
+  useEffect(() => {
+    if (!mapRef.current || !focusTarget) return;
+
+    userHasSelectedRef.current = true;
+    focusMapOn(mapRef.current, focusTarget.position, bottomInsetRef.current, SELECTED_POINT_ZOOM);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusTarget?.key, routeBounds]);
+
+  // Efecto 4: encuadre general (overview). Reacciona tanto a que la ruta ya
+  // esté resuelta como a que se mida el alto real de la ficha inferior,
+  // sin importar cuál de los dos llegue primero. No hace nada una vez que
+  // el usuario seleccionó un punto (para no pelear con el zoom del efecto 3).
+  useEffect(() => {
+    if (userHasSelectedRef.current) return;
+    if (!mapRef.current || !routeBounds) return;
+
+    mapRef.current.fitBounds(routeBounds, {
+      ...OVERVIEW_PADDING,
+      bottom: bottomInsetPx + OVERVIEW_BOTTOM_GAP,
+    });
+  }, [routeBounds, bottomInsetPx]);
 
   if (points.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden rounded-[24px] bg-[linear-gradient(180deg,#f8fafc,#eef4f6)] p-4 shadow-inner ring-1 ring-slate-200/70">
-      <div className="mb-4">
-        <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-          Paso 1
-        </p>
-        <h2 className="font-black text-slate-950">Selecciona dónde subirás</h2>
-      </div>
-
+    <div className={cn("relative h-full w-full bg-slate-200", className)}>
       {canUseGoogleMap && !mapError ? (
-        <div className="mb-3 overflow-hidden rounded-[22px] bg-slate-200 shadow-inner ring-1 ring-white">
-          <div ref={mapElementRef} className="h-64 w-full" />
-        </div>
+        <div ref={mapElementRef} className="h-full w-full" />
       ) : (
-        <div className="mb-3 rounded-[18px] bg-[#F4B400]/15 p-3 text-xs font-bold text-[#8a6500]">
-          {mapUnavailableMessage ??
-            "El mapa no está disponible por ahora. Puedes elegir tu punto en la lista."}
+        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(160deg,#dbe6ff,#f5f7fa)] p-8 text-center">
+          <p className="text-sm font-bold text-[#0B2E86]/70">
+            {mapUnavailableMessage}
+          </p>
         </div>
       )}
-
-      <div
-        className={cn(
-          "relative overflow-hidden rounded-[22px] p-4 ring-1 ring-white",
-          canUseGoogleMap && !mapError
-            ? "bg-white"
-            : "bg-[linear-gradient(145deg,#EAF1FF,#F8FAFC)]",
-        )}
-      >
-        {canUseGoogleMap && !mapError ? null : (
-          <div className="absolute bottom-8 left-8 top-8 w-1 rounded-full bg-[#1E5BFF]/20" />
-        )}
-        <div className="space-y-3">
-          {points.map((point, index) => {
-            const isSelected = point.id === selectedPointId;
-            const isBoardable = boardableSet.has(point.id);
-            return (
-              <label
-                key={point.id}
-                className={cn(
-                  "relative flex gap-3",
-                  isBoardable ? "cursor-pointer" : "cursor-not-allowed opacity-60",
-                )}
-              >
-                {isBoardable ? (
-                  <input
-                    className="peer sr-only"
-                    type="radio"
-                    name="boardingPointId"
-                    value={point.id}
-                    checked={isSelected}
-                    onChange={() => setSelectedPointId(point.id)}
-                    required
-                  />
-                ) : null}
-                <span
-                  className={cn(
-                    "relative z-10 mt-4 grid size-8 shrink-0 place-items-center rounded-full border-4 border-white text-white shadow-[0_10px_22px_rgba(15,23,42,0.16)] transition-colors",
-                    isSelected
-                      ? "bg-[#2ECC71]"
-                      : point.isTerminal
-                        ? "bg-[#E53935]"
-                        : "bg-[#1E5BFF]",
-                  )}
-                >
-                  <MapPin className="size-4" />
-                </span>
-
-                <span
-                  className={cn(
-                    "block min-w-0 flex-1 rounded-[18px] bg-white p-3 shadow-[0_8px_20px_rgba(15,23,42,0.08)] ring-1 transition",
-                    isSelected ? "ring-2 ring-[#1E5BFF]" : "ring-transparent",
-                  )}
-                >
-                  <span className="block truncate text-sm font-black text-slate-950">
-                    {point.name}
-                  </span>
-                  <span className="mt-0.5 block text-xs font-semibold text-slate-500">
-                    Paso aprox: {pointTime(point, plannedDepartureAtIso)}
-                  </span>
-                  {!isBoardable ? (
-                    <span className="mt-3 block rounded-full bg-slate-200 px-3 py-1.5 text-center text-[11px] font-black text-slate-600">
-                      Destino final
-                    </span>
-                  ) : isSelected ? (
-                    <span className="mt-3 block rounded-full bg-[#1E5BFF] px-3 py-1.5 text-center text-[11px] font-black text-white">
-                      Elegido
-                    </span>
-                  ) : null}
-                </span>
-
-                {!defaultPoint && isBoardable && index === 0 ? (
-                  <input
-                    type="hidden"
-                    name="boardingPointId"
-                    value={point.id}
-                  />
-                ) : null}
-              </label>
-            );
-          })}
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }

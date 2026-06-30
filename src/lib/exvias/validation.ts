@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { BookingStatus, PaymentStatus, RouteDirection, TripStatus } from "@/lib/generated/prisma/client";
+import {
+  BookingStatus,
+  PaymentStatus,
+  RouteAlertType,
+  RouteDirection,
+  TripStatus,
+} from "@/lib/generated/prisma/client";
 import { vehicleCatalog } from "@/lib/exvias/constants";
 
 const vehicleIds = vehicleCatalog.map((vehicle) => vehicle.id) as [
@@ -222,4 +228,22 @@ export const updateOwnDriverSettingsSchema = z.object({
 export const updateManualSeatsSchema = z.object({
   tripId: z.string().min(1),
   delta: z.coerce.number().int().min(-1).max(1),
+});
+
+export const reportRouteAlertSchema = z.object({
+  routeId: z.string().min(1),
+  type: z.enum([
+    RouteAlertType.CONTROL_POLICIAL,
+    RouteAlertType.OPERATIVO,
+    RouteAlertType.ACCIDENTE,
+    RouteAlertType.TRAFICO,
+    RouteAlertType.OTRO,
+  ]),
+  latitude: z.coerce.number().min(-90).max(90),
+  longitude: z.coerce.number().min(-180).max(180),
+  note: z.string().trim().max(140).optional(),
+});
+
+export const clearRouteAlertSchema = z.object({
+  alertId: z.string().min(1),
 });

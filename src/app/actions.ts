@@ -28,6 +28,7 @@ import {
   updateTripStatus,
   upsertDriverProfile,
 } from "@/lib/exvias/trips";
+import { createRouteAlert, clearRouteAlert } from "@/lib/exvias/alerts";
 import {
   activateDriverProfileSchema,
   assignDriverToTripSchema,
@@ -44,6 +45,8 @@ import {
   publishNextRampTurnSchema,
   rejectPaymentSchema,
   reassignDriverCurrentTripSchema,
+  reportRouteAlertSchema,
+  clearRouteAlertSchema,
   saveRampQueuesSchema,
   saveScheduleBoardSchema,
   suspendDriverAfterTripSchema,
@@ -595,4 +598,45 @@ export async function reassignDriverCurrentTripAction(formData: FormData) {
   revalidatePath("/trips");
   revalidatePath("/my-trips");
   redirect("/admin/conductores?admin=driverTripReassigned");
+}
+
+export async function reportRouteAlertAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = reportRouteAlertSchema.parse({
+    routeId: value(formData, "routeId"),
+    type: value(formData, "type"),
+    latitude: value(formData, "latitude"),
+    longitude: value(formData, "longitude"),
+    note: value(formData, "note") || undefined,
+  });
+
+  await createRouteAlert({
+    ...input,
+    userId: user.id,
+  });
+
+  revalidatePath("/driver");
+  redirect("/driver?alert=reported");
+}
+
+export async function clearRouteAlertAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login?callbackURL=/driver");
+  }
+
+  const input = clearRouteAlertSchema.parse({
+    alertId: value(formData, "alertId"),
+  });
+
+  await clearRouteAlert({
+    ...input,
+    userId: user.id,
+  });
+
+  revalidatePath("/driver");
 }

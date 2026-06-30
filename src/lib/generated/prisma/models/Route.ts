@@ -279,6 +279,7 @@ export type RouteWhereInput = {
   points?: Prisma.RoutePointListRelationFilter
   trips?: Prisma.TripListRelationFilter
   queueEntries?: Prisma.DriverQueueListRelationFilter
+  alerts?: Prisma.RouteAlertListRelationFilter
 }
 
 export type RouteOrderByWithRelationInput = {
@@ -296,6 +297,7 @@ export type RouteOrderByWithRelationInput = {
   points?: Prisma.RoutePointOrderByRelationAggregateInput
   trips?: Prisma.TripOrderByRelationAggregateInput
   queueEntries?: Prisma.DriverQueueOrderByRelationAggregateInput
+  alerts?: Prisma.RouteAlertOrderByRelationAggregateInput
 }
 
 export type RouteWhereUniqueInput = Prisma.AtLeast<{
@@ -317,6 +319,7 @@ export type RouteWhereUniqueInput = Prisma.AtLeast<{
   points?: Prisma.RoutePointListRelationFilter
   trips?: Prisma.TripListRelationFilter
   queueEntries?: Prisma.DriverQueueListRelationFilter
+  alerts?: Prisma.RouteAlertListRelationFilter
 }, "id" | "origin_destination">
 
 export type RouteOrderByWithAggregationInput = {
@@ -370,6 +373,7 @@ export type RouteCreateInput = {
   points?: Prisma.RoutePointCreateNestedManyWithoutRouteInput
   trips?: Prisma.TripCreateNestedManyWithoutRouteInput
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutRouteInput
+  alerts?: Prisma.RouteAlertCreateNestedManyWithoutRouteInput
 }
 
 export type RouteUncheckedCreateInput = {
@@ -387,6 +391,7 @@ export type RouteUncheckedCreateInput = {
   points?: Prisma.RoutePointUncheckedCreateNestedManyWithoutRouteInput
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutRouteInput
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutRouteInput
+  alerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutRouteInput
 }
 
 export type RouteUpdateInput = {
@@ -404,6 +409,7 @@ export type RouteUpdateInput = {
   points?: Prisma.RoutePointUpdateManyWithoutRouteNestedInput
   trips?: Prisma.TripUpdateManyWithoutRouteNestedInput
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutRouteNestedInput
+  alerts?: Prisma.RouteAlertUpdateManyWithoutRouteNestedInput
 }
 
 export type RouteUncheckedUpdateInput = {
@@ -421,6 +427,7 @@ export type RouteUncheckedUpdateInput = {
   points?: Prisma.RoutePointUncheckedUpdateManyWithoutRouteNestedInput
   trips?: Prisma.TripUncheckedUpdateManyWithoutRouteNestedInput
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutRouteNestedInput
+  alerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutRouteNestedInput
 }
 
 export type RouteCreateManyInput = {
@@ -539,6 +546,20 @@ export type DecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type RouteCreateNestedOneWithoutAlertsInput = {
+  create?: Prisma.XOR<Prisma.RouteCreateWithoutAlertsInput, Prisma.RouteUncheckedCreateWithoutAlertsInput>
+  connectOrCreate?: Prisma.RouteCreateOrConnectWithoutAlertsInput
+  connect?: Prisma.RouteWhereUniqueInput
+}
+
+export type RouteUpdateOneRequiredWithoutAlertsNestedInput = {
+  create?: Prisma.XOR<Prisma.RouteCreateWithoutAlertsInput, Prisma.RouteUncheckedCreateWithoutAlertsInput>
+  connectOrCreate?: Prisma.RouteCreateOrConnectWithoutAlertsInput
+  upsert?: Prisma.RouteUpsertWithoutAlertsInput
+  connect?: Prisma.RouteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RouteUpdateToOneWithWhereWithoutAlertsInput, Prisma.RouteUpdateWithoutAlertsInput>, Prisma.RouteUncheckedUpdateWithoutAlertsInput>
+}
+
 export type RouteCreateNestedOneWithoutPointsInput = {
   create?: Prisma.XOR<Prisma.RouteCreateWithoutPointsInput, Prisma.RouteUncheckedCreateWithoutPointsInput>
   connectOrCreate?: Prisma.RouteCreateOrConnectWithoutPointsInput
@@ -581,6 +602,90 @@ export type RouteUpdateOneRequiredWithoutQueueEntriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RouteUpdateToOneWithWhereWithoutQueueEntriesInput, Prisma.RouteUpdateWithoutQueueEntriesInput>, Prisma.RouteUncheckedUpdateWithoutQueueEntriesInput>
 }
 
+export type RouteCreateWithoutAlertsInput = {
+  id?: string
+  name: string
+  origin: string
+  destination: string
+  farePen?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  capacity?: number
+  minimumToStart?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  points?: Prisma.RoutePointCreateNestedManyWithoutRouteInput
+  trips?: Prisma.TripCreateNestedManyWithoutRouteInput
+  queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutRouteInput
+}
+
+export type RouteUncheckedCreateWithoutAlertsInput = {
+  id?: string
+  name: string
+  origin: string
+  destination: string
+  farePen?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositPen?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  capacity?: number
+  minimumToStart?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  points?: Prisma.RoutePointUncheckedCreateNestedManyWithoutRouteInput
+  trips?: Prisma.TripUncheckedCreateNestedManyWithoutRouteInput
+  queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutRouteInput
+}
+
+export type RouteCreateOrConnectWithoutAlertsInput = {
+  where: Prisma.RouteWhereUniqueInput
+  create: Prisma.XOR<Prisma.RouteCreateWithoutAlertsInput, Prisma.RouteUncheckedCreateWithoutAlertsInput>
+}
+
+export type RouteUpsertWithoutAlertsInput = {
+  update: Prisma.XOR<Prisma.RouteUpdateWithoutAlertsInput, Prisma.RouteUncheckedUpdateWithoutAlertsInput>
+  create: Prisma.XOR<Prisma.RouteCreateWithoutAlertsInput, Prisma.RouteUncheckedCreateWithoutAlertsInput>
+  where?: Prisma.RouteWhereInput
+}
+
+export type RouteUpdateToOneWithWhereWithoutAlertsInput = {
+  where?: Prisma.RouteWhereInput
+  data: Prisma.XOR<Prisma.RouteUpdateWithoutAlertsInput, Prisma.RouteUncheckedUpdateWithoutAlertsInput>
+}
+
+export type RouteUpdateWithoutAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
+  destination?: Prisma.StringFieldUpdateOperationsInput | string
+  farePen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  minimumToStart?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  points?: Prisma.RoutePointUpdateManyWithoutRouteNestedInput
+  trips?: Prisma.TripUpdateManyWithoutRouteNestedInput
+  queueEntries?: Prisma.DriverQueueUpdateManyWithoutRouteNestedInput
+}
+
+export type RouteUncheckedUpdateWithoutAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
+  destination?: Prisma.StringFieldUpdateOperationsInput | string
+  farePen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositPen?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  minimumToStart?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  points?: Prisma.RoutePointUncheckedUpdateManyWithoutRouteNestedInput
+  trips?: Prisma.TripUncheckedUpdateManyWithoutRouteNestedInput
+  queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutRouteNestedInput
+}
+
 export type RouteCreateWithoutPointsInput = {
   id?: string
   name: string
@@ -595,6 +700,7 @@ export type RouteCreateWithoutPointsInput = {
   updatedAt?: Date | string
   trips?: Prisma.TripCreateNestedManyWithoutRouteInput
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutRouteInput
+  alerts?: Prisma.RouteAlertCreateNestedManyWithoutRouteInput
 }
 
 export type RouteUncheckedCreateWithoutPointsInput = {
@@ -611,6 +717,7 @@ export type RouteUncheckedCreateWithoutPointsInput = {
   updatedAt?: Date | string
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutRouteInput
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutRouteInput
+  alerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutRouteInput
 }
 
 export type RouteCreateOrConnectWithoutPointsInput = {
@@ -643,6 +750,7 @@ export type RouteUpdateWithoutPointsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   trips?: Prisma.TripUpdateManyWithoutRouteNestedInput
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutRouteNestedInput
+  alerts?: Prisma.RouteAlertUpdateManyWithoutRouteNestedInput
 }
 
 export type RouteUncheckedUpdateWithoutPointsInput = {
@@ -659,6 +767,7 @@ export type RouteUncheckedUpdateWithoutPointsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   trips?: Prisma.TripUncheckedUpdateManyWithoutRouteNestedInput
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutRouteNestedInput
+  alerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutRouteNestedInput
 }
 
 export type RouteCreateWithoutTripsInput = {
@@ -675,6 +784,7 @@ export type RouteCreateWithoutTripsInput = {
   updatedAt?: Date | string
   points?: Prisma.RoutePointCreateNestedManyWithoutRouteInput
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutRouteInput
+  alerts?: Prisma.RouteAlertCreateNestedManyWithoutRouteInput
 }
 
 export type RouteUncheckedCreateWithoutTripsInput = {
@@ -691,6 +801,7 @@ export type RouteUncheckedCreateWithoutTripsInput = {
   updatedAt?: Date | string
   points?: Prisma.RoutePointUncheckedCreateNestedManyWithoutRouteInput
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutRouteInput
+  alerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutRouteInput
 }
 
 export type RouteCreateOrConnectWithoutTripsInput = {
@@ -723,6 +834,7 @@ export type RouteUpdateWithoutTripsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   points?: Prisma.RoutePointUpdateManyWithoutRouteNestedInput
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutRouteNestedInput
+  alerts?: Prisma.RouteAlertUpdateManyWithoutRouteNestedInput
 }
 
 export type RouteUncheckedUpdateWithoutTripsInput = {
@@ -739,6 +851,7 @@ export type RouteUncheckedUpdateWithoutTripsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   points?: Prisma.RoutePointUncheckedUpdateManyWithoutRouteNestedInput
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutRouteNestedInput
+  alerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutRouteNestedInput
 }
 
 export type RouteCreateWithoutQueueEntriesInput = {
@@ -755,6 +868,7 @@ export type RouteCreateWithoutQueueEntriesInput = {
   updatedAt?: Date | string
   points?: Prisma.RoutePointCreateNestedManyWithoutRouteInput
   trips?: Prisma.TripCreateNestedManyWithoutRouteInput
+  alerts?: Prisma.RouteAlertCreateNestedManyWithoutRouteInput
 }
 
 export type RouteUncheckedCreateWithoutQueueEntriesInput = {
@@ -771,6 +885,7 @@ export type RouteUncheckedCreateWithoutQueueEntriesInput = {
   updatedAt?: Date | string
   points?: Prisma.RoutePointUncheckedCreateNestedManyWithoutRouteInput
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutRouteInput
+  alerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutRouteInput
 }
 
 export type RouteCreateOrConnectWithoutQueueEntriesInput = {
@@ -803,6 +918,7 @@ export type RouteUpdateWithoutQueueEntriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   points?: Prisma.RoutePointUpdateManyWithoutRouteNestedInput
   trips?: Prisma.TripUpdateManyWithoutRouteNestedInput
+  alerts?: Prisma.RouteAlertUpdateManyWithoutRouteNestedInput
 }
 
 export type RouteUncheckedUpdateWithoutQueueEntriesInput = {
@@ -819,6 +935,7 @@ export type RouteUncheckedUpdateWithoutQueueEntriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   points?: Prisma.RoutePointUncheckedUpdateManyWithoutRouteNestedInput
   trips?: Prisma.TripUncheckedUpdateManyWithoutRouteNestedInput
+  alerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutRouteNestedInput
 }
 
 
@@ -830,12 +947,14 @@ export type RouteCountOutputType = {
   points: number
   trips: number
   queueEntries: number
+  alerts: number
 }
 
 export type RouteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   points?: boolean | RouteCountOutputTypeCountPointsArgs
   trips?: boolean | RouteCountOutputTypeCountTripsArgs
   queueEntries?: boolean | RouteCountOutputTypeCountQueueEntriesArgs
+  alerts?: boolean | RouteCountOutputTypeCountAlertsArgs
 }
 
 /**
@@ -869,6 +988,13 @@ export type RouteCountOutputTypeCountQueueEntriesArgs<ExtArgs extends runtime.Ty
   where?: Prisma.DriverQueueWhereInput
 }
 
+/**
+ * RouteCountOutputType without action
+ */
+export type RouteCountOutputTypeCountAlertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RouteAlertWhereInput
+}
+
 
 export type RouteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -885,6 +1011,7 @@ export type RouteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   points?: boolean | Prisma.Route$pointsArgs<ExtArgs>
   trips?: boolean | Prisma.Route$tripsArgs<ExtArgs>
   queueEntries?: boolean | Prisma.Route$queueEntriesArgs<ExtArgs>
+  alerts?: boolean | Prisma.Route$alertsArgs<ExtArgs>
   _count?: boolean | Prisma.RouteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["route"]>
 
@@ -935,6 +1062,7 @@ export type RouteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   points?: boolean | Prisma.Route$pointsArgs<ExtArgs>
   trips?: boolean | Prisma.Route$tripsArgs<ExtArgs>
   queueEntries?: boolean | Prisma.Route$queueEntriesArgs<ExtArgs>
+  alerts?: boolean | Prisma.Route$alertsArgs<ExtArgs>
   _count?: boolean | Prisma.RouteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RouteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -946,6 +1074,7 @@ export type $RoutePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     points: Prisma.$RoutePointPayload<ExtArgs>[]
     trips: Prisma.$TripPayload<ExtArgs>[]
     queueEntries: Prisma.$DriverQueuePayload<ExtArgs>[]
+    alerts: Prisma.$RouteAlertPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1356,6 +1485,7 @@ export interface Prisma__RouteClient<T, Null = never, ExtArgs extends runtime.Ty
   points<T extends Prisma.Route$pointsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Route$pointsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoutePointPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   trips<T extends Prisma.Route$tripsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Route$tripsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TripPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   queueEntries<T extends Prisma.Route$queueEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Route$queueEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DriverQueuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  alerts<T extends Prisma.Route$alertsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Route$alertsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RouteAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1858,6 +1988,30 @@ export type Route$queueEntriesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.DriverQueueScalarFieldEnum | Prisma.DriverQueueScalarFieldEnum[]
+}
+
+/**
+ * Route.alerts
+ */
+export type Route$alertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RouteAlert
+   */
+  select?: Prisma.RouteAlertSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RouteAlert
+   */
+  omit?: Prisma.RouteAlertOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RouteAlertInclude<ExtArgs> | null
+  where?: Prisma.RouteAlertWhereInput
+  orderBy?: Prisma.RouteAlertOrderByWithRelationInput | Prisma.RouteAlertOrderByWithRelationInput[]
+  cursor?: Prisma.RouteAlertWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RouteAlertScalarFieldEnum | Prisma.RouteAlertScalarFieldEnum[]
 }
 
 /**

@@ -55,6 +55,11 @@ const messages = {
     description: "La disponibilidad visible para pasajeros ya fue actualizada.",
     tone: "success",
   },
+  alertReported: {
+    title: "Alerta reportada",
+    description: "Los demás conductores de tu ruta ya pueden verla.",
+    tone: "success",
+  },
 } as const;
 
 export function PageToast({
@@ -79,6 +84,7 @@ export function PageToast({
     params.delete("settings");
     params.delete("admin");
     params.delete("seats");
+    params.delete("alert");
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }, [pathname, router, searchParams, type]);

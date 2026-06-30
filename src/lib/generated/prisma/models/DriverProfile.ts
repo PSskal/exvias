@@ -284,6 +284,7 @@ export type DriverProfileWhereInput = {
   queueEntries?: Prisma.DriverQueueListRelationFilter
   trips?: Prisma.TripListRelationFilter
   confirmedPayments?: Prisma.PaymentListRelationFilter
+  routeAlerts?: Prisma.RouteAlertListRelationFilter
 }
 
 export type DriverProfileOrderByWithRelationInput = {
@@ -304,6 +305,7 @@ export type DriverProfileOrderByWithRelationInput = {
   queueEntries?: Prisma.DriverQueueOrderByRelationAggregateInput
   trips?: Prisma.TripOrderByRelationAggregateInput
   confirmedPayments?: Prisma.PaymentOrderByRelationAggregateInput
+  routeAlerts?: Prisma.RouteAlertOrderByRelationAggregateInput
 }
 
 export type DriverProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -327,6 +329,7 @@ export type DriverProfileWhereUniqueInput = Prisma.AtLeast<{
   queueEntries?: Prisma.DriverQueueListRelationFilter
   trips?: Prisma.TripListRelationFilter
   confirmedPayments?: Prisma.PaymentListRelationFilter
+  routeAlerts?: Prisma.RouteAlertListRelationFilter
 }, "id" | "userId">
 
 export type DriverProfileOrderByWithAggregationInput = {
@@ -386,6 +389,7 @@ export type DriverProfileCreateInput = {
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripCreateNestedManyWithoutDriverInput
   confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
+  routeAlerts?: Prisma.RouteAlertCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileUncheckedCreateInput = {
@@ -405,6 +409,7 @@ export type DriverProfileUncheckedCreateInput = {
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
   confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
+  routeAlerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileUpdateInput = {
@@ -424,6 +429,7 @@ export type DriverProfileUpdateInput = {
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
   confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUpdateManyWithoutCreatedByNestedInput
 }
 
 export type DriverProfileUncheckedUpdateInput = {
@@ -443,6 +449,7 @@ export type DriverProfileUncheckedUpdateInput = {
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
   confirmedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type DriverProfileCreateManyInput = {
@@ -598,6 +605,20 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type DriverProfileCreateNestedOneWithoutRouteAlertsInput = {
+  create?: Prisma.XOR<Prisma.DriverProfileCreateWithoutRouteAlertsInput, Prisma.DriverProfileUncheckedCreateWithoutRouteAlertsInput>
+  connectOrCreate?: Prisma.DriverProfileCreateOrConnectWithoutRouteAlertsInput
+  connect?: Prisma.DriverProfileWhereUniqueInput
+}
+
+export type DriverProfileUpdateOneRequiredWithoutRouteAlertsNestedInput = {
+  create?: Prisma.XOR<Prisma.DriverProfileCreateWithoutRouteAlertsInput, Prisma.DriverProfileUncheckedCreateWithoutRouteAlertsInput>
+  connectOrCreate?: Prisma.DriverProfileCreateOrConnectWithoutRouteAlertsInput
+  upsert?: Prisma.DriverProfileUpsertWithoutRouteAlertsInput
+  connect?: Prisma.DriverProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DriverProfileUpdateToOneWithWhereWithoutRouteAlertsInput, Prisma.DriverProfileUpdateWithoutRouteAlertsInput>, Prisma.DriverProfileUncheckedUpdateWithoutRouteAlertsInput>
+}
+
 export type DriverProfileCreateNestedOneWithoutTripsInput = {
   create?: Prisma.XOR<Prisma.DriverProfileCreateWithoutTripsInput, Prisma.DriverProfileUncheckedCreateWithoutTripsInput>
   connectOrCreate?: Prisma.DriverProfileCreateOrConnectWithoutTripsInput
@@ -660,6 +681,7 @@ export type DriverProfileCreateWithoutUserInput = {
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripCreateNestedManyWithoutDriverInput
   confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
+  routeAlerts?: Prisma.RouteAlertCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileUncheckedCreateWithoutUserInput = {
@@ -678,6 +700,7 @@ export type DriverProfileUncheckedCreateWithoutUserInput = {
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
   confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
+  routeAlerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileCreateOrConnectWithoutUserInput = {
@@ -712,10 +735,104 @@ export type DriverProfileUpdateWithoutUserInput = {
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
   confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUpdateManyWithoutCreatedByNestedInput
 }
 
 export type DriverProfileUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
+  trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type DriverProfileCreateWithoutRouteAlertsInput = {
+  id?: string
+  phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
+  licensePlate?: string | null
+  vehicleName?: string | null
+  capacity?: number
+  isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
+  queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
+  trips?: Prisma.TripCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
+}
+
+export type DriverProfileUncheckedCreateWithoutRouteAlertsInput = {
+  id?: string
+  userId: string
+  phone?: string | null
+  yapePhone?: string | null
+  yapeName?: string | null
+  licensePlate?: string | null
+  vehicleName?: string | null
+  capacity?: number
+  isActive?: boolean
+  suspendAfterTrip?: boolean
+  suspensionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
+  trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
+  confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
+}
+
+export type DriverProfileCreateOrConnectWithoutRouteAlertsInput = {
+  where: Prisma.DriverProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.DriverProfileCreateWithoutRouteAlertsInput, Prisma.DriverProfileUncheckedCreateWithoutRouteAlertsInput>
+}
+
+export type DriverProfileUpsertWithoutRouteAlertsInput = {
+  update: Prisma.XOR<Prisma.DriverProfileUpdateWithoutRouteAlertsInput, Prisma.DriverProfileUncheckedUpdateWithoutRouteAlertsInput>
+  create: Prisma.XOR<Prisma.DriverProfileCreateWithoutRouteAlertsInput, Prisma.DriverProfileUncheckedCreateWithoutRouteAlertsInput>
+  where?: Prisma.DriverProfileWhereInput
+}
+
+export type DriverProfileUpdateToOneWithWhereWithoutRouteAlertsInput = {
+  where?: Prisma.DriverProfileWhereInput
+  data: Prisma.XOR<Prisma.DriverProfileUpdateWithoutRouteAlertsInput, Prisma.DriverProfileUncheckedUpdateWithoutRouteAlertsInput>
+}
+
+export type DriverProfileUpdateWithoutRouteAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  licensePlate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspendAfterTrip?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  suspensionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
+  queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
+  trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
+  confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
+}
+
+export type DriverProfileUncheckedUpdateWithoutRouteAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   yapePhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   yapeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -748,6 +865,7 @@ export type DriverProfileCreateWithoutTripsInput = {
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
   confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
+  routeAlerts?: Prisma.RouteAlertCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileUncheckedCreateWithoutTripsInput = {
@@ -766,6 +884,7 @@ export type DriverProfileUncheckedCreateWithoutTripsInput = {
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
   confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
+  routeAlerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileCreateOrConnectWithoutTripsInput = {
@@ -800,6 +919,7 @@ export type DriverProfileUpdateWithoutTripsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
   confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUpdateManyWithoutCreatedByNestedInput
 }
 
 export type DriverProfileUncheckedUpdateWithoutTripsInput = {
@@ -818,6 +938,7 @@ export type DriverProfileUncheckedUpdateWithoutTripsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
   confirmedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type DriverProfileCreateWithoutConfirmedPaymentsInput = {
@@ -836,6 +957,7 @@ export type DriverProfileCreateWithoutConfirmedPaymentsInput = {
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
   queueEntries?: Prisma.DriverQueueCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripCreateNestedManyWithoutDriverInput
+  routeAlerts?: Prisma.RouteAlertCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileUncheckedCreateWithoutConfirmedPaymentsInput = {
@@ -854,6 +976,7 @@ export type DriverProfileUncheckedCreateWithoutConfirmedPaymentsInput = {
   updatedAt?: Date | string
   queueEntries?: Prisma.DriverQueueUncheckedCreateNestedManyWithoutDriverInput
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
+  routeAlerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileCreateOrConnectWithoutConfirmedPaymentsInput = {
@@ -888,6 +1011,7 @@ export type DriverProfileUpdateWithoutConfirmedPaymentsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
   queueEntries?: Prisma.DriverQueueUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUpdateManyWithoutCreatedByNestedInput
 }
 
 export type DriverProfileUncheckedUpdateWithoutConfirmedPaymentsInput = {
@@ -906,6 +1030,7 @@ export type DriverProfileUncheckedUpdateWithoutConfirmedPaymentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   queueEntries?: Prisma.DriverQueueUncheckedUpdateManyWithoutDriverNestedInput
   trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type DriverProfileCreateWithoutQueueEntriesInput = {
@@ -924,6 +1049,7 @@ export type DriverProfileCreateWithoutQueueEntriesInput = {
   user: Prisma.UserCreateNestedOneWithoutDriverProfileInput
   trips?: Prisma.TripCreateNestedManyWithoutDriverInput
   confirmedPayments?: Prisma.PaymentCreateNestedManyWithoutConfirmedByDriverInput
+  routeAlerts?: Prisma.RouteAlertCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileUncheckedCreateWithoutQueueEntriesInput = {
@@ -942,6 +1068,7 @@ export type DriverProfileUncheckedCreateWithoutQueueEntriesInput = {
   updatedAt?: Date | string
   trips?: Prisma.TripUncheckedCreateNestedManyWithoutDriverInput
   confirmedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutConfirmedByDriverInput
+  routeAlerts?: Prisma.RouteAlertUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type DriverProfileCreateOrConnectWithoutQueueEntriesInput = {
@@ -976,6 +1103,7 @@ export type DriverProfileUpdateWithoutQueueEntriesInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutDriverProfileNestedInput
   trips?: Prisma.TripUpdateManyWithoutDriverNestedInput
   confirmedPayments?: Prisma.PaymentUpdateManyWithoutConfirmedByDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUpdateManyWithoutCreatedByNestedInput
 }
 
 export type DriverProfileUncheckedUpdateWithoutQueueEntriesInput = {
@@ -994,6 +1122,7 @@ export type DriverProfileUncheckedUpdateWithoutQueueEntriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   trips?: Prisma.TripUncheckedUpdateManyWithoutDriverNestedInput
   confirmedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutConfirmedByDriverNestedInput
+  routeAlerts?: Prisma.RouteAlertUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 
@@ -1005,12 +1134,14 @@ export type DriverProfileCountOutputType = {
   queueEntries: number
   trips: number
   confirmedPayments: number
+  routeAlerts: number
 }
 
 export type DriverProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   queueEntries?: boolean | DriverProfileCountOutputTypeCountQueueEntriesArgs
   trips?: boolean | DriverProfileCountOutputTypeCountTripsArgs
   confirmedPayments?: boolean | DriverProfileCountOutputTypeCountConfirmedPaymentsArgs
+  routeAlerts?: boolean | DriverProfileCountOutputTypeCountRouteAlertsArgs
 }
 
 /**
@@ -1044,6 +1175,13 @@ export type DriverProfileCountOutputTypeCountConfirmedPaymentsArgs<ExtArgs exten
   where?: Prisma.PaymentWhereInput
 }
 
+/**
+ * DriverProfileCountOutputType without action
+ */
+export type DriverProfileCountOutputTypeCountRouteAlertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RouteAlertWhereInput
+}
+
 
 export type DriverProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1063,6 +1201,7 @@ export type DriverProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   queueEntries?: boolean | Prisma.DriverProfile$queueEntriesArgs<ExtArgs>
   trips?: boolean | Prisma.DriverProfile$tripsArgs<ExtArgs>
   confirmedPayments?: boolean | Prisma.DriverProfile$confirmedPaymentsArgs<ExtArgs>
+  routeAlerts?: boolean | Prisma.DriverProfile$routeAlertsArgs<ExtArgs>
   _count?: boolean | Prisma.DriverProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["driverProfile"]>
 
@@ -1122,6 +1261,7 @@ export type DriverProfileInclude<ExtArgs extends runtime.Types.Extensions.Intern
   queueEntries?: boolean | Prisma.DriverProfile$queueEntriesArgs<ExtArgs>
   trips?: boolean | Prisma.DriverProfile$tripsArgs<ExtArgs>
   confirmedPayments?: boolean | Prisma.DriverProfile$confirmedPaymentsArgs<ExtArgs>
+  routeAlerts?: boolean | Prisma.DriverProfile$routeAlertsArgs<ExtArgs>
   _count?: boolean | Prisma.DriverProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DriverProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1138,6 +1278,7 @@ export type $DriverProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     queueEntries: Prisma.$DriverQueuePayload<ExtArgs>[]
     trips: Prisma.$TripPayload<ExtArgs>[]
     confirmedPayments: Prisma.$PaymentPayload<ExtArgs>[]
+    routeAlerts: Prisma.$RouteAlertPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1551,6 +1692,7 @@ export interface Prisma__DriverProfileClient<T, Null = never, ExtArgs extends ru
   queueEntries<T extends Prisma.DriverProfile$queueEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DriverProfile$queueEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DriverQueuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   trips<T extends Prisma.DriverProfile$tripsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DriverProfile$tripsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TripPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   confirmedPayments<T extends Prisma.DriverProfile$confirmedPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DriverProfile$confirmedPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  routeAlerts<T extends Prisma.DriverProfile$routeAlertsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DriverProfile$routeAlertsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RouteAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2063,6 +2205,30 @@ export type DriverProfile$confirmedPaymentsArgs<ExtArgs extends runtime.Types.Ex
   take?: number
   skip?: number
   distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * DriverProfile.routeAlerts
+ */
+export type DriverProfile$routeAlertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RouteAlert
+   */
+  select?: Prisma.RouteAlertSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RouteAlert
+   */
+  omit?: Prisma.RouteAlertOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RouteAlertInclude<ExtArgs> | null
+  where?: Prisma.RouteAlertWhereInput
+  orderBy?: Prisma.RouteAlertOrderByWithRelationInput | Prisma.RouteAlertOrderByWithRelationInput[]
+  cursor?: Prisma.RouteAlertWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RouteAlertScalarFieldEnum | Prisma.RouteAlertScalarFieldEnum[]
 }
 
 /**

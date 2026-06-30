@@ -129,6 +129,14 @@ enum QueueStatus {
   OFFLINE
 }
 
+enum RouteAlertType {
+  CONTROL_POLICIAL
+  OPERATIVO
+  ACCIDENTE
+  TRAFICO
+  OTRO
+}
+
 model PassengerProfile {
   id        String   @id @default(cuid())
   userId    String   @unique
@@ -157,6 +165,7 @@ model DriverProfile {
   queueEntries      DriverQueue[]
   trips             Trip[]
   confirmedPayments Payment[]     @relation("PaymentConfirmedByDriver")
+  routeAlerts       RouteAlert[]
 }
 
 model Route {
@@ -174,8 +183,29 @@ model Route {
   points         RoutePoint[]
   trips          Trip[]
   queueEntries   DriverQueue[]
+  alerts         RouteAlert[]
 
   @@unique([origin, destination])
+}
+
+// Aviso temporal sobre la vía (control policial, operativo, accidente, etc.)
+// reportado por un conductor para que otros conductores de la misma ruta lo
+// vean. No tiene dirección: es el mismo camino físico para ambos sentidos.
+// Se vence solo (expiresAt) porque este tipo de novedades se mueven.
+model RouteAlert {
+  id          String         @id @default(cuid())
+  routeId     String
+  type        RouteAlertType
+  latitude    Float
+  longitude   Float
+  note        String?
+  createdById String
+  createdAt   DateTime       @default(now())
+  expiresAt   DateTime
+  route       Route          @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  createdBy   DriverProfile  @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([routeId, expiresAt])
 }
 
 model RoutePoint {

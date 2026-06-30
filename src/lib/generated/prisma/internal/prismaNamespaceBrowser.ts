@@ -58,6 +58,7 @@ export const ModelName = {
   PassengerProfile: 'PassengerProfile',
   DriverProfile: 'DriverProfile',
   Route: 'Route',
+  RouteAlert: 'RouteAlert',
   RoutePoint: 'RoutePoint',
   Trip: 'Trip',
   Booking: 'Booking',
@@ -186,6 +187,21 @@ export const RouteScalarFieldEnum = {
 } as const
 
 export type RouteScalarFieldEnum = (typeof RouteScalarFieldEnum)[keyof typeof RouteScalarFieldEnum]
+
+
+export const RouteAlertScalarFieldEnum = {
+  id: 'id',
+  routeId: 'routeId',
+  type: 'type',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  note: 'note',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type RouteAlertScalarFieldEnum = (typeof RouteAlertScalarFieldEnum)[keyof typeof RouteAlertScalarFieldEnum]
 
 
 export const RoutePointScalarFieldEnum = {

@@ -391,6 +391,7 @@ export const ModelName = {
   PassengerProfile: 'PassengerProfile',
   DriverProfile: 'DriverProfile',
   Route: 'Route',
+  RouteAlert: 'RouteAlert',
   RoutePoint: 'RoutePoint',
   Trip: 'Trip',
   Booking: 'Booking',
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "passengerProfile" | "driverProfile" | "route" | "routePoint" | "trip" | "booking" | "payment" | "driverQueue"
+    modelProps: "user" | "session" | "account" | "verification" | "passengerProfile" | "driverProfile" | "route" | "routeAlert" | "routePoint" | "trip" | "booking" | "payment" | "driverQueue"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -933,6 +934,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RouteAlert: {
+      payload: Prisma.$RouteAlertPayload<ExtArgs>
+      fields: Prisma.RouteAlertFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RouteAlertFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RouteAlertFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>
+        }
+        findFirst: {
+          args: Prisma.RouteAlertFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RouteAlertFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>
+        }
+        findMany: {
+          args: Prisma.RouteAlertFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>[]
+        }
+        create: {
+          args: Prisma.RouteAlertCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>
+        }
+        createMany: {
+          args: Prisma.RouteAlertCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RouteAlertCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>[]
+        }
+        delete: {
+          args: Prisma.RouteAlertDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>
+        }
+        update: {
+          args: Prisma.RouteAlertUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>
+        }
+        deleteMany: {
+          args: Prisma.RouteAlertDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RouteAlertUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RouteAlertUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>[]
+        }
+        upsert: {
+          args: Prisma.RouteAlertUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RouteAlertPayload>
+        }
+        aggregate: {
+          args: Prisma.RouteAlertAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRouteAlert>
+        }
+        groupBy: {
+          args: Prisma.RouteAlertGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RouteAlertGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RouteAlertCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RouteAlertCountAggregateOutputType> | number
+        }
+      }
+    }
     RoutePoint: {
       payload: Prisma.$RoutePointPayload<ExtArgs>
       fields: Prisma.RoutePointFieldRefs
@@ -1449,6 +1524,21 @@ export const RouteScalarFieldEnum = {
 export type RouteScalarFieldEnum = (typeof RouteScalarFieldEnum)[keyof typeof RouteScalarFieldEnum]
 
 
+export const RouteAlertScalarFieldEnum = {
+  id: 'id',
+  routeId: 'routeId',
+  type: 'type',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  note: 'note',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type RouteAlertScalarFieldEnum = (typeof RouteAlertScalarFieldEnum)[keyof typeof RouteAlertScalarFieldEnum]
+
+
 export const RoutePointScalarFieldEnum = {
   id: 'id',
   routeId: 'routeId',
@@ -1643,16 +1733,16 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
- * Reference to a field of type 'RouteDirection'
+ * Reference to a field of type 'RouteAlertType'
  */
-export type EnumRouteDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RouteDirection'>
+export type EnumRouteAlertTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RouteAlertType'>
     
 
 
 /**
- * Reference to a field of type 'RouteDirection[]'
+ * Reference to a field of type 'RouteAlertType[]'
  */
-export type ListEnumRouteDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RouteDirection[]'>
+export type ListEnumRouteAlertTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RouteAlertType[]'>
     
 
 
@@ -1667,6 +1757,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RouteDirection'
+ */
+export type EnumRouteDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RouteDirection'>
+    
+
+
+/**
+ * Reference to a field of type 'RouteDirection[]'
+ */
+export type ListEnumRouteDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RouteDirection[]'>
     
 
 
@@ -1856,6 +1960,7 @@ export type GlobalOmitConfig = {
   passengerProfile?: Prisma.PassengerProfileOmit
   driverProfile?: Prisma.DriverProfileOmit
   route?: Prisma.RouteOmit
+  routeAlert?: Prisma.RouteAlertOmit
   routePoint?: Prisma.RoutePointOmit
   trip?: Prisma.TripOmit
   booking?: Prisma.BookingOmit

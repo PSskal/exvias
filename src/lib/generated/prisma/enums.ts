@@ -77,3 +77,14 @@ export const QueueStatus = {
 } as const
 
 export type QueueStatus = (typeof QueueStatus)[keyof typeof QueueStatus]
+
+
+export const RouteAlertType = {
+  CONTROL_POLICIAL: 'CONTROL_POLICIAL',
+  OPERATIVO: 'OPERATIVO',
+  ACCIDENTE: 'ACCIDENTE',
+  TRAFICO: 'TRAFICO',
+  OTRO: 'OTRO'
+} as const
+
+export type RouteAlertType = (typeof RouteAlertType)[keyof typeof RouteAlertType]
